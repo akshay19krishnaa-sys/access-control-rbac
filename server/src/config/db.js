@@ -4,21 +4,35 @@ import mongoose from 'mongoose';
  * connectDB — Establishes connection to MongoDB via Mongoose.
  * Uses environment variable MONGODB_URI with sensible fallback.
  */
+let cachedPromise = null;
+
 export const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) {
+    return mongoose.connection;
+  }
+
+  if (cachedPromise) {
+    return cachedPromise;
+  }
+
   const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/access_control_rbac';
 
-  try {
-    const conn = await mongoose.connect(uri, {
+  cachedPromise = mongoose
+    .connect(uri, {
       autoIndex: true,
       serverSelectionTimeoutMS: 5000,
+    })
+    .then((conn) => {
+      console.log(`[MongoDB] Connected successfully to: ${conn.connection.host}/${conn.connection.name}`);
+      return conn;
+    })
+    .catch((error) => {
+      cachedPromise = null;
+      console.error(`[MongoDB] Connection failed: ${error.message}`);
+      throw error;
     });
 
-    console.log(`[MongoDB] Connected successfully to: ${conn.connection.host}/${conn.connection.name}`);
-    return conn;
-  } catch (error) {
-    console.error(`[MongoDB] Connection failed: ${error.message}`);
-    throw error;
-  }
+  return cachedPromise;
 };
 
 mongoose.connection.on('disconnected', () => {

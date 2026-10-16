@@ -9,6 +9,7 @@ import businessRoutes from './routes/businessRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import { accessLogger } from './middleware/auth.js';
 import { notFoundHandler, globalErrorHandler } from './middleware/errorHandler.js';
+import { connectDB } from './config/db.js';
 
 const app = express();
 
@@ -49,6 +50,16 @@ app.use(
 // ─── Middleware ──────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(accessLogger);
+
+// Ensure MongoDB is connected before handling any route (essential for Vercel Serverless)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ─── Healthcheck & API Info ──────────────────────────────────────────────────
 app.get('/', (req, res) => {
