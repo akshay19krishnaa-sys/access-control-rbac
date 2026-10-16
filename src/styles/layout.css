@@ -1,10 +1,4 @@
-/* =============================================
-   LAYOUT STYLES — Sidebar, TopBar, DashboardLayout
-   ============================================= */
 
-/* ══════════════════════════════════════════════
-   Dashboard Shell
-   ══════════════════════════════════════════════ */
 .dashboard-shell {
   display: flex;
   height: 100vh;
@@ -13,9 +7,6 @@
   background-color: var(--color-surface-50);
 }
 
-/* ══════════════════════════════════════════════
-   Sidebar
-   ══════════════════════════════════════════════ */
 .sidebar {
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
@@ -35,7 +26,6 @@
   min-width: var(--sidebar-collapsed-width);
 }
 
-/* Sidebar subtle top accent line */
 .sidebar::before {
   content: '';
   position: absolute;
@@ -46,7 +36,6 @@
   background: linear-gradient(90deg, #86B6F6, #B4D4FF, transparent);
 }
 
-/* ── Sidebar Logo / Brand Area ── */
 .sidebar-brand {
   display: flex;
   align-items: center;
@@ -106,7 +95,6 @@
   text-transform: uppercase;
 }
 
-/* ── Sidebar Navigation ── */
 .sidebar-nav {
   flex: 1;
   display: flex;
@@ -133,7 +121,6 @@
   opacity: 0;
 }
 
-/* ── Sidebar Footer ── */
 .sidebar-footer {
   padding: var(--spacing-md) var(--spacing-sm);
   border-top: 1px solid rgba(180, 212, 255, 0.2);
@@ -200,7 +187,6 @@
   text-overflow: ellipsis;
 }
 
-/* ── Collapse Toggle Button ── */
 .sidebar-collapse-btn {
   position: absolute;
   right: -13px;
@@ -242,9 +228,6 @@
   transform: rotate(180deg);
 }
 
-/* ══════════════════════════════════════════════
-   Top Bar
-   ══════════════════════════════════════════════ */
 .topbar {
   height: var(--topbar-height);
   background: var(--color-surface-0);
@@ -297,7 +280,6 @@
   gap: var(--spacing-sm);
 }
 
-/* Top bar icon buttons */
 .topbar-icon-btn {
   width: 38px;
   height: 38px;
@@ -325,7 +307,6 @@
   color: #176B87;
 }
 
-/* Notification badge */
 .topbar-icon-btn__badge {
   position: absolute;
   top: 6px;
@@ -337,14 +318,12 @@
   border: 2px solid var(--color-surface-0);
 }
 
-/* Top bar divider */
 .topbar__divider {
   width: 1px;
   height: 28px;
   background: #B4D4FF;
 }
 
-/* Topbar user chip */
 .topbar-user-chip {
   display: flex;
   align-items: center;
@@ -387,9 +366,6 @@
   margin-top: 1px;
 }
 
-/* ══════════════════════════════════════════════
-   Main Content Area
-   ══════════════════════════════════════════════ */
 .content-shell {
   flex: 1;
   display: flex;
@@ -406,7 +382,6 @@
   scroll-behavior: smooth;
 }
 
-/* ── Mobile Overlay ── */
 .sidebar-overlay {
   display: none;
   position: fixed;
@@ -416,7 +391,6 @@
   backdrop-filter: blur(2px);
 }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -489,9 +463,6 @@
   }
 }
 
-/* ══════════════════════════════════════════════
-   Global Search Modal
-   ══════════════════════════════════════════════ */
 .search-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -601,9 +572,6 @@
   justify-content: space-between;
 }
 
-/* ══════════════════════════════════════════════
-   Notifications Popover
-   ══════════════════════════════════════════════ */
 .notifications-popover {
   position: absolute;
   top: calc(100% + 10px);
@@ -707,9 +675,6 @@
   justify-content: space-between;
 }
 
-/* ══════════════════════════════════════════════
-   Help Modal
-   ══════════════════════════════════════════════ */
 .help-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -735,9 +700,6 @@
   overflow: hidden;
 }
 
-/* ══════════════════════════════════════════════
-   User Menu Popover
-   ══════════════════════════════════════════════ */
 .user-menu-popover {
   position: absolute;
   top: calc(100% + 10px);

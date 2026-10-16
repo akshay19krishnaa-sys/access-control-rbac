@@ -1,11 +1,5 @@
 import mongoose from 'mongoose';
 
-/**
- * AuditLog — Persistent Audit Trail Schema
- *
- * Stores immutable audit records of all administrative and security actions
- * in the RBAC system, including actor, entity, event type, and timestamp.
- */
 const auditLogSchema = new mongoose.Schema(
   {
     action: {
@@ -66,7 +60,6 @@ const auditLogSchema = new mongoose.Schema(
   }
 );
 
-// Compound indexes for high-performance audit querying
 auditLogSchema.index({ createdAt: -1, action: 1 });
 auditLogSchema.index({ entityType: 1, createdAt: -1 });
 

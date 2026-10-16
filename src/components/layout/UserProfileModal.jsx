@@ -45,7 +45,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
         className="user-profile-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+
         <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-white">
           <div className="flex items-center gap-2">
             <span className="text-xl">👤</span>
@@ -63,9 +63,8 @@ export default function UserProfileModal({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-6 space-y-5 text-sm bg-slate-50/50">
-          {/* Identity Card */}
+
           <div className="flex items-center gap-3.5 p-4 bg-white rounded-xl border border-slate-200 shadow-xs">
             <div className="w-12 h-12 rounded-full bg-[#176B87] text-white flex items-center justify-center font-bold text-base flex-shrink-0 shadow-xs">
               SA
@@ -84,7 +83,6 @@ export default function UserProfileModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* RBAC Security Credentials */}
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2.5 text-xs">
             <div className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
               Assigned Access & Scope
@@ -109,7 +107,6 @@ export default function UserProfileModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Quick Access Actions */}
           <div className="space-y-1.5">
             <div className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] mb-1">
               Configuration Shortcuts
@@ -140,13 +137,11 @@ export default function UserProfileModal({ isOpen, onClose }) {
             </button>
           </div>
 
-          {/* Notice */}
           <div className="p-3 rounded-lg bg-blue-50/70 border border-blue-200/80 text-[11px] text-blue-900 leading-relaxed">
             <strong>Active Administrator Session:</strong> Standard single-administrator demo instance. Real-time RBAC authorizations and audit trails are logged for every action.
           </div>
         </div>
 
-        {/* Footer */}
         <div className="p-4 bg-white border-t border-slate-200 flex justify-end">
           <button
             type="button"

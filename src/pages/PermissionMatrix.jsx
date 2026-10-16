@@ -14,7 +14,6 @@ import {
   setClientPreference,
 } from '../services/api';
 
-/* ── Inline SVG Icons for Modules ── */
 const ModuleIcons = {
   dashboard: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -82,7 +81,6 @@ const ModuleIcons = {
   ),
 };
 
-/* ── UI Icons ── */
 const SaveIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -127,7 +125,6 @@ const CloseIcon = () => (
   </svg>
 );
 
-/* Helper to get initials */
 const getInitials = (name) => {
   if (!name || typeof name !== 'string' || !name.trim()) return 'NA';
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -135,27 +132,22 @@ const getInitials = (name) => {
   return parts.map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 };
 
-// Total count of applicable permission slots across all modules
 const TOTAL_APPLICABLE_SLOTS = MODULES.reduce((sum, mod) => sum + mod.applicable.length, 0);
 
 function PermissionMatrix() {
   const [searchParams] = useSearchParams();
   const urlRoleId = searchParams.get('roleId');
 
-  /* ── State ── */
   const [roles, setRoles] = useState([]);
   const [allPermissions, setAllPermissions] = useState({});
   const [selectedRoleId, setSelectedRoleId] = useState(urlRoleId || '');
   const [currentRolePerms, setCurrentRolePerms] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // Module search filter
   const [searchModule, setSearchModule] = useState('');
 
-  // Unsaved changes modal for switching roles
   const [pendingRoleId, setPendingRoleId] = useState(null);
 
-  // Toast notification
   const [toast, setToast] = useState(null);
   const toastTimeoutRef = useRef(null);
 
@@ -167,7 +159,6 @@ function PermissionMatrix() {
     }, 3800);
   }, []);
 
-  // Fetch initial roles & permissions from Express + MongoDB backend
   useEffect(() => {
     async function loadData() {
       try {
@@ -180,7 +171,7 @@ function PermissionMatrix() {
         setRoles(rolesData);
 
         const matrix = permsData?.matrix || {};
-        // Make sure every role has a matrix entry
+
         rolesData.forEach((r) => {
           const rId = r.id || r._id;
           if (!matrix[rId]) {
@@ -189,7 +180,6 @@ function PermissionMatrix() {
         });
         setAllPermissions(matrix);
 
-        // Preference or URL param or first role
         const preferredId = getClientPreference('selected_role_id', null);
         const targetRole =
           (urlRoleId && rolesData.find((r) => (r.id || r._id) === urlRoleId)) ||
@@ -214,7 +204,6 @@ function PermissionMatrix() {
     loadData();
   }, [showToast, urlRoleId]);
 
-  // Sync if urlRoleId changes while on the page
   useEffect(() => {
     if (urlRoleId && roles.length > 0 && urlRoleId !== selectedRoleId) {
       const match = roles.find((r) => (r.id || r._id) === urlRoleId);
@@ -227,7 +216,6 @@ function PermissionMatrix() {
     }
   }, [urlRoleId, roles, allPermissions, selectedRoleId]);
 
-  // Find currently selected role object
   const currentRole = useMemo(() => {
     return (
       roles.find((r) => (r.id || r._id) === selectedRoleId) ||
@@ -236,7 +224,6 @@ function PermissionMatrix() {
     );
   }, [roles, selectedRoleId]);
 
-  // Priority 2: Protect System Administrator role permissions against reduction/modification
   const isSystemAdmin = useMemo(() => {
     if (!currentRole) return false;
     return Boolean(
@@ -245,17 +232,14 @@ function PermissionMatrix() {
     );
   }, [currentRole]);
 
-  // Saved permissions for comparison
   const savedRolePerms = useMemo(() => {
     return allPermissions[selectedRoleId] || createEmptyRolePermissions();
   }, [allPermissions, selectedRoleId]);
 
-  // Check if current role has unsaved changes
   const isDirty = useMemo(() => {
     return JSON.stringify(currentRolePerms) !== JSON.stringify(savedRolePerms);
   }, [currentRolePerms, savedRolePerms]);
 
-  // Count active granted permissions for the selected role
   const activeCount = useMemo(() => {
     let count = 0;
     MODULES.forEach((mod) => {
@@ -268,7 +252,6 @@ function PermissionMatrix() {
 
   const activePercent = Math.round((activeCount / TOTAL_APPLICABLE_SLOTS) * 100);
 
-  // Filter modules by search query
   const filteredModules = useMemo(() => {
     const q = searchModule.trim().toLowerCase();
     if (!q) return MODULES;
@@ -280,7 +263,6 @@ function PermissionMatrix() {
     );
   }, [searchModule]);
 
-  // Update working permissions when role changes
   const switchRole = (newRoleId) => {
     setSelectedRoleId(newRoleId);
     setClientPreference('selected_role_id', newRoleId);
@@ -294,14 +276,13 @@ function PermissionMatrix() {
     if (targetId === selectedRoleId) return;
 
     if (isDirty) {
-      // Trigger confirmation modal
+
       setPendingRoleId(targetId);
     } else {
       switchRole(targetId);
     }
   };
 
-  // Single permission checkbox toggle
   const handleToggle = (moduleId, actionId) => {
     if (isSystemAdmin) return;
     if (!isActionApplicable(moduleId, actionId)) return;
@@ -315,7 +296,6 @@ function PermissionMatrix() {
     }));
   };
 
-  // Row-level bulk toggle (all applicable actions in a module)
   const handleToggleRow = (moduleId) => {
     if (isSystemAdmin) return;
     const mod = MODULES.find((m) => m.id === moduleId);
@@ -334,10 +314,9 @@ function PermissionMatrix() {
     });
   };
 
-  // Column-level bulk toggle (action across all modules where applicable)
   const handleToggleColumn = (actionId) => {
     if (isSystemAdmin) return;
-    // Check if this action is currently true for all applicable modules
+
     const allApplicableAreTrue = MODULES.filter((m) => m.applicable.includes(actionId)).every(
       (m) => currentRolePerms[m.id]?.[actionId] === true
     );
@@ -357,7 +336,6 @@ function PermissionMatrix() {
     });
   };
 
-  // Bulk: Select All Applicable
   const handleSelectAll = () => {
     if (isSystemAdmin) return;
     setCurrentRolePerms((prev) => {
@@ -373,7 +351,6 @@ function PermissionMatrix() {
     showToast('All applicable permissions selected.', 'info');
   };
 
-  // Bulk: Clear All
   const handleClearAll = () => {
     if (isSystemAdmin) return;
     setCurrentRolePerms((prev) => {
@@ -389,14 +366,12 @@ function PermissionMatrix() {
     showToast('All permissions cleared for this role.', 'warning');
   };
 
-  // Reset Changes
   const handleReset = () => {
     if (isSystemAdmin) return;
     setCurrentRolePerms(savedRolePerms);
     showToast('Changes discarded. Reset to saved state.', 'info');
   };
 
-  // Save Permissions
   const handleSave = async () => {
     if (isSystemAdmin) {
       showToast('Permissions for System Administrator are protected and cannot be modified.', 'warning');
@@ -419,7 +394,6 @@ function PermissionMatrix() {
     }
   };
 
-  // Modal actions when switching roles with unsaved changes
   const handleModalSaveAndSwitch = async () => {
     if (isSystemAdmin || activeCount === 0) {
       showToast('Cannot save invalid permissions. Discarding or correcting is required.', 'error');
@@ -450,7 +424,7 @@ function PermissionMatrix() {
 
   return (
     <div>
-      {/* ── Page Header ── */}
+
       <div className="page-header">
         <div className="page-header__left">
           <h2 className="page-header__title" id="matrix-heading">Permission Matrix</h2>
@@ -490,7 +464,6 @@ function PermissionMatrix() {
         </div>
       </div>
 
-      {/* ── System Admin Protected Role Banner ── */}
       {isSystemAdmin && (
         <div
           className="matrix-protected-banner"
@@ -520,7 +493,6 @@ function PermissionMatrix() {
         </div>
       )}
 
-      {/* ── Minimum Permission Warning Banner ── */}
       {!isSystemAdmin && activeCount === 0 && (
         <div
           className="matrix-warning-banner"
@@ -550,7 +522,6 @@ function PermissionMatrix() {
         </div>
       )}
 
-      {/* ── Unsaved Changes Alert Banner ── */}
       {isDirty && !isSystemAdmin && (
         <div className="matrix-unsaved-banner" role="alert">
           <div className="matrix-unsaved-banner__left">
@@ -580,7 +551,6 @@ function PermissionMatrix() {
         </div>
       )}
 
-      {/* ── Role Selector & Profile Card ── */}
       <div className="matrix-role-card">
         <div className="matrix-role-card__left">
           <div
@@ -641,7 +611,6 @@ function PermissionMatrix() {
           </div>
         </div>
 
-        {/* Quick Stats: Permissions Meter */}
         <div className="matrix-role-card__stats">
           <div className="matrix-stat-box">
             <span className="matrix-stat-box__label">Access Coverage</span>
@@ -673,10 +642,9 @@ function PermissionMatrix() {
         </div>
       </div>
 
-      {/* ── Toolbar: Search & Bulk Controls ── */}
       <div className="matrix-toolbar">
         <div className="matrix-toolbar__left">
-          {/* Module Search */}
+
           <div className="matrix-search">
             <span className="matrix-search__icon" aria-hidden="true">
               <SearchIcon />
@@ -728,7 +696,6 @@ function PermissionMatrix() {
         </div>
       </div>
 
-      {/* ── Interactive Permission Matrix Table ── */}
       <div className="matrix-table-wrap">
         <div className="matrix-table-scroll">
           <table className="matrix-table" aria-label="Permission Matrix Table">
@@ -776,7 +743,7 @@ function PermissionMatrix() {
 
                   return (
                     <tr key={mod.id} id={`matrix-row-${mod.id}`}>
-                      {/* Module Info Cell */}
+
                       <td className="col-module-cell">
                         <div className="matrix-module-info">
                           <div className="matrix-module-header">
@@ -788,7 +755,7 @@ function PermissionMatrix() {
                               <div className="matrix-module-desc">{mod.description}</div>
                             </div>
                           </div>
-                          {/* Row-level toggle */}
+
                           <button
                             type="button"
                             className="matrix-row-toggle-btn"
@@ -802,7 +769,6 @@ function PermissionMatrix() {
                         </div>
                       </td>
 
-                      {/* Permission Action Cells */}
                       {PERMISSION_ACTIONS.map((action) => {
                         const applicable = isActionApplicable(mod.id, action.id);
                         const isGranted = Boolean(rowPerms[action.id]);
@@ -847,7 +813,6 @@ function PermissionMatrix() {
           </table>
         </div>
 
-        {/* ── Table Footer Summary & Legend ── */}
         <div className="matrix-table-footer">
           <div className="matrix-legend">
             <div className="matrix-legend-item">
@@ -870,7 +835,6 @@ function PermissionMatrix() {
         </div>
       </div>
 
-      {/* ── Unsaved Changes Confirmation Modal ── */}
       {pendingRoleId && (
         <div
           className="matrix-modal-backdrop"
@@ -914,7 +878,6 @@ function PermissionMatrix() {
         </div>
       )}
 
-      {/* ── Toast Notifications ── */}
       {toast && (
         <div className="toast-container" aria-live="polite">
           <div className={`toast toast-${toast.type}`}>

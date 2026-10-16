@@ -22,14 +22,12 @@ async function verify() {
   if (pCount !== 41) throw new Error(`Expected 41 permissions, found ${pCount}`);
   if (rpCount === 0) throw new Error('Expected role_permissions to be populated');
 
-  // Verify unique indexes
   const pIndexes = await Permission.collection.indexes();
   console.log('\nPermission indexes:', pIndexes.map(i => i.name).join(', '));
 
   const rpIndexes = await RolePermission.collection.indexes();
   console.log('RolePermission indexes:', rpIndexes.map(i => i.name).join(', '));
 
-  // Verify custom role resolution
   const testRole = await Role.findOne({ isSystem: false, status: 'ACTIVE' });
   console.log(`\nVerifying role: "${testRole.name}" [${testRole._id}]`);
 
@@ -40,8 +38,6 @@ async function verify() {
   console.log(`checkRolePermission evaluated: ${hasPerm} (expected: true)`);
   if (!hasPerm) throw new Error('checkRolePermission failed for assigned permission');
 
-  // Verify that resolution does NOT rely on role.permissions
-  // Temporarily inspect effective permissions resolved from RolePermission
   const effective = await getRoleEffectivePermissions(testRole._id);
   const matrixValue = effective[assignedRP.module][assignedRP.action];
   console.log(`getRoleEffectivePermissions resolved: ${matrixValue} (expected: true)`);

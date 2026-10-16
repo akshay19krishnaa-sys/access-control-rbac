@@ -13,11 +13,9 @@ import { requireAdminAuth } from '../middleware/auth.js';
 
 const router = Router();
 
-// Public / Demo Inspection Endpoints
 router.get('/', getRoles);
 router.get('/:id', getRoleById);
 
-// Administrative Endpoints (marked with requireAdminAuth)
 router.post('/', requireAdminAuth, createRole);
 router.put('/:id', requireAdminAuth, updateRole);
 router.patch('/:id/status', requireAdminAuth, patchRoleStatus);

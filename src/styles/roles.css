@@ -1,13 +1,4 @@
-/* =============================================
-   ROLES PAGE STYLES — Phase 2 Role Management
-   Custom styles for the Role Management feature.
-   Tailwind handles layout/spacing; this file handles
-   component-specific styles, animations, and visual detail.
-   ============================================= */
 
-/* ══════════════════════════════════════════════
-   Toolbar — Search, Filters, Export
-   ══════════════════════════════════════════════ */
 .roles-toolbar {
   display: flex;
   align-items: center;
@@ -21,7 +12,6 @@
   margin-bottom: var(--spacing-lg);
 }
 
-/* ── Search Input ── */
 .roles-search {
   position: relative;
   flex: 1;
@@ -62,7 +52,6 @@
   box-shadow: 0 0 0 3px rgba(134, 182, 246, 0.35);
 }
 
-/* ── Filter Selects ── */
 .roles-filter-select {
   height: 38px;
   padding: 0 30px 0 12px;
@@ -89,9 +78,6 @@
   box-shadow: 0 0 0 3px rgba(134, 182, 246, 0.35);
 }
 
-/* ══════════════════════════════════════════════
-   Roles Table
-   ══════════════════════════════════════════════ */
 .roles-table-wrap {
   background: #ffffff;
   border: 1px solid #B4D4FF;
@@ -111,7 +97,6 @@
   min-width: 720px;
 }
 
-/* ── Table Header ── */
 .roles-table thead tr {
   background: #EEF5FF;
   border-bottom: 2px solid #B4D4FF;
@@ -132,7 +117,6 @@
 .roles-table th.col-center { text-align: center; }
 .roles-table th.col-right  { text-align: right; }
 
-/* ── Table Body ── */
 .roles-table tbody tr {
   border-bottom: 1px solid #EEF5FF;
   transition: background var(--transition-fast);
@@ -150,7 +134,6 @@
 .roles-table td.col-center { text-align: center; }
 .roles-table td.col-right  { text-align: right; }
 
-/* ── Role Name Cell ── */
 .role-name-cell {
   display: flex;
   align-items: center;
@@ -206,7 +189,6 @@
   margin-top: 2px;
 }
 
-/* ── Users Count ── */
 .users-count {
   display: inline-flex;
   align-items: center;
@@ -222,7 +204,6 @@
   color: #176B87;
 }
 
-/* ── Branch Scope Badges ── */
 .scope-badge {
   display: inline-flex;
   align-items: center;
@@ -251,7 +232,6 @@
   border: 1px solid #86B6F6;
 }
 
-/* ── Created Date ── */
 .created-date {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
@@ -259,7 +239,6 @@
   white-space: nowrap;
 }
 
-/* ── Table Footer ── */
 .roles-table-footer {
   display: flex;
   align-items: center;
@@ -282,7 +261,6 @@
   font-weight: 600;
 }
 
-/* ── Empty State ── */
 .roles-empty {
   display: flex;
   flex-direction: column;
@@ -323,9 +301,6 @@
   line-height: 1.6;
 }
 
-/* ══════════════════════════════════════════════
-   Action Menu (Row Dropdown)
-   ══════════════════════════════════════════════ */
 .action-menu {
   position: relative;
   display: inline-block;
@@ -429,9 +404,6 @@
   margin: 3px 0;
 }
 
-/* ══════════════════════════════════════════════
-   Slide-Over Panel
-   ══════════════════════════════════════════════ */
 .panel-backdrop {
   position: fixed;
   inset: 0;
@@ -524,7 +496,6 @@
 
 .slide-panel__close svg { width: 16px; height: 16px; }
 
-/* The form fills the remaining space between header and footer */
 .slide-panel__form {
   flex: 1;
   display: flex;
@@ -550,9 +521,6 @@
   flex-shrink: 0;
 }
 
-/* ══════════════════════════════════════════════
-   Form Fields
-   ══════════════════════════════════════════════ */
 .form-section {
   padding-bottom: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
@@ -696,7 +664,6 @@
 .form-char-count.warn { color: var(--color-warning); }
 .form-char-count.over { color: var(--color-danger); }
 
-/* ── Branch Checkbox Grid ── */
 .branch-checkbox-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -737,7 +704,6 @@
   flex-shrink: 0;
 }
 
-/* ── Status Toggle ── */
 .status-toggle {
   display: flex;
   gap: var(--spacing-sm);
@@ -786,9 +752,6 @@
   font-weight: 600;
 }
 
-/* ══════════════════════════════════════════════
-   Role Detail Panel
-   ══════════════════════════════════════════════ */
 .detail-hero {
   display: flex;
   align-items: center;
@@ -870,7 +833,6 @@
 
 .detail-field__value.is-muted { color: var(--color-text-tertiary); }
 
-/* Branch tags in detail view */
 .branch-tags {
   display: flex;
   flex-wrap: wrap;
@@ -888,9 +850,6 @@
   border: 1px solid var(--color-surface-200);
 }
 
-/* ══════════════════════════════════════════════
-   Confirm Dialog
-   ══════════════════════════════════════════════ */
 .confirm-backdrop {
   position: fixed;
   inset: 0;
@@ -968,9 +927,6 @@
   justify-content: flex-end;
 }
 
-/* ══════════════════════════════════════════════
-   Modal Dialog (General / Add Level)
-   ══════════════════════════════════════════════ */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1048,7 +1004,6 @@
   height: 16px;
 }
 
-/* Modal Form wraps body and footer to preserve flex height calculation */
 .modal-form {
   display: flex;
   flex-direction: column;
@@ -1066,7 +1021,6 @@
   overscroll-behavior: contain;
 }
 
-/* Custom sleek scrollbar for modal body */
 .modal-body::-webkit-scrollbar {
   width: 6px;
 }
@@ -1128,9 +1082,6 @@
   }
 }
 
-/* ══════════════════════════════════════════════
-   Responsive Adjustments
-   ══════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .roles-toolbar { flex-direction: column; align-items: stretch; }
   .roles-search  { min-width: unset; }
@@ -1144,9 +1095,6 @@
   .roles-table-footer { flex-direction: column; align-items: flex-start; }
 }
 
-/* ══════════════════════════════════════════════
-   Toast Notification
-   ══════════════════════════════════════════════ */
 .toast-container {
   position: fixed;
   bottom: 24px;

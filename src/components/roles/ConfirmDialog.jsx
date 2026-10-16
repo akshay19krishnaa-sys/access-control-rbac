@@ -1,8 +1,3 @@
-/**
- * ConfirmDialog.jsx
- * Small centered modal that asks the user to confirm activating or
- * deactivating a role before the state change is applied.
- */
 
 const WarnIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -19,18 +14,12 @@ const CheckCircleIcon = () => (
   </svg>
 );
 
-/**
- * @param {'activate'|'deactivate'} action — the action being confirmed
- * @param {object}  role      — the role object being acted on
- * @param {Function} onConfirm — called when the user clicks the confirm button
- * @param {Function} onCancel  — called when the user cancels or clicks backdrop
- */
 function ConfirmDialog({ action, role, onConfirm, onCancel }) {
   const isDeactivate = action === 'deactivate';
 
   return (
     <div className="confirm-backdrop" onClick={onCancel} role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-      {/* Stop propagation so clicking the dialog body does not close it */}
+
       <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
         <div className={`confirm-dialog__icon ${isDeactivate ? 'is-warn' : 'is-ok'}`} aria-hidden="true">
           {isDeactivate ? <WarnIcon /> : <CheckCircleIcon />}

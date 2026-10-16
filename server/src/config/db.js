@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
 
-/**
- * connectDB — Establishes connection to MongoDB via Mongoose.
- * Uses environment variable MONGODB_URI with sensible fallback.
- */
 let cachedPromise = null;
 
 export const connectDB = async () => {

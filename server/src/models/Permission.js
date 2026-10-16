@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
 
-/**
- * Permission Schema — Catalog of valid assignable permissions
- * Aligns with Section 26 of Task 1 - Access Control PDF.
- */
 const PermissionSchema = new mongoose.Schema(
   {
     module: {
@@ -61,7 +57,6 @@ const PermissionSchema = new mongoose.Schema(
   }
 );
 
-// Compound unique index on module and action
 PermissionSchema.index({ module: 1, action: 1 }, { unique: true });
 
 export const Permission = mongoose.model('Permission', PermissionSchema);

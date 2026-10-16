@@ -4,13 +4,8 @@ import { Role } from '../models/Role.js';
 import { MODULES_METADATA, PERMISSION_ACTIONS_METADATA } from '../data/seedData.js';
 import { hasAtLeastOnePermission } from '../utils/permissionValidator.js';
 
-// Cache of permission catalog mapping: `${module}_${action}` -> Permission document
 let catalogCache = null;
 
-/**
- * Ensures the permission catalog is seeded with the exact 41 applicable permissions.
- * Idempotent: upserts records matching { module, action }.
- */
 export async function seedPermissionCatalog() {
   const actionsMap = new Map(PERMISSION_ACTIONS_METADATA.map((a) => [a.id, a.label]));
   const ops = [];
@@ -44,14 +39,10 @@ export async function seedPermissionCatalog() {
     await Permission.bulkWrite(ops);
   }
 
-  // Refresh cache
   catalogCache = await Permission.find({}).lean();
   return catalogCache;
 }
 
-/**
- * Returns all permission catalog entries.
- */
 export async function getPermissionCatalog() {
   if (!catalogCache || catalogCache.length === 0) {
     catalogCache = await Permission.find({}).lean();
@@ -62,9 +53,6 @@ export async function getPermissionCatalog() {
   return catalogCache;
 }
 
-/**
- * Helper to build empty permissions matrix structure with false for all applicable actions
- */
 export function buildEmptyPermissionsMatrix() {
   const matrix = {};
   for (const mod of MODULES_METADATA) {
@@ -76,11 +64,6 @@ export function buildEmptyPermissionsMatrix() {
   return matrix;
 }
 
-/**
- * Resolves effective permissions for a single role from the normalized `role_permissions` collection.
- * @param {string|mongoose.Types.ObjectId} roleId
- * @returns {Promise<object>} Permissions object formatted as { [module]: { [action]: boolean } }
- */
 export async function getRoleEffectivePermissions(roleId) {
   const role = await Role.findById(roleId).lean();
   if (!role) return null;
@@ -89,7 +72,7 @@ export async function getRoleEffectivePermissions(roleId) {
   const isSysAdmin = Boolean(role.isSystem || role.name?.toLowerCase() === 'system administrator');
 
   if (isSysAdmin) {
-    // System Administrator has all applicable permissions granted
+
     for (const mod of MODULES_METADATA) {
       const applicable = mod.applicable || [];
       for (const act of applicable) {
@@ -99,7 +82,6 @@ export async function getRoleEffectivePermissions(roleId) {
     return matrix;
   }
 
-  // Query normalized role_permissions
   const assigned = await RolePermission.find({ roleId }).lean();
   for (const rp of assigned) {
     if (matrix[rp.module] && matrix[rp.module][rp.action] !== undefined) {
@@ -110,17 +92,12 @@ export async function getRoleEffectivePermissions(roleId) {
   return matrix;
 }
 
-/**
- * Resolves effective permissions for all roles from the normalized `role_permissions` collection.
- * @returns {Promise<object>} Map of { [roleId]: { [module]: { [action]: boolean } } }
- */
 export async function getAllRolesEffectivePermissions() {
   const [roles, allRolePermissions] = await Promise.all([
     Role.find().lean(),
     RolePermission.find({ granted: true }).lean(),
   ]);
 
-  // Index assignments by roleId string
   const rolePermsMap = new Map();
   for (const rp of allRolePermissions) {
     const rIdStr = rp.roleId.toString();
@@ -160,10 +137,6 @@ export async function getAllRolesEffectivePermissions() {
   return result;
 }
 
-/**
- * Checks if a specific role possesses permission for a module and action.
- * Reads directly from `RolePermission` collection (or evaluates System Admin).
- */
 export async function checkRolePermission(roleId, module, action) {
   const role = await Role.findById(roleId).lean();
   if (!role || role.status === 'INACTIVE') {
@@ -171,7 +144,7 @@ export async function checkRolePermission(roleId, module, action) {
   }
 
   if (role.isSystem || role.name?.toLowerCase() === 'system administrator') {
-    // Check if the action is applicable to this module
+
     const modMeta = MODULES_METADATA.find((m) => m.id.toLowerCase() === module.toLowerCase());
     return modMeta ? (modMeta.applicable || []).includes(action.toLowerCase()) : false;
   }
@@ -186,14 +159,6 @@ export async function checkRolePermission(roleId, module, action) {
   return Boolean(exists);
 }
 
-/**
- * Updates role permissions in the normalized `role_permissions` collection.
- * Enforces:
- * 1. Minimum permission rule (rejects if all permissions are false or empty).
- * 2. System Administrator protection (rejects reduction/modification).
- * 3. Atomic replacement in `role_permissions`.
- * 4. Backward-compatible sync to `role.permissions`.
- */
 export async function setRolePermissions(roleId, permissionsPayload, options = {}) {
   const role = await Role.findById(roleId);
   if (!role) {
@@ -203,7 +168,6 @@ export async function setRolePermissions(roleId, permissionsPayload, options = {
     throw err;
   }
 
-  // Priority 2: System Administrator permissions are protected against unauthorized modification
   if (!options.isInternalSeed && (role.isSystem || role.name?.toLowerCase() === 'system administrator')) {
     const err = new Error('Permissions for the System Administrator role are protected and cannot be modified or reduced.');
     err.code = 'SYSTEM_PERMISSIONS_PROTECTED';
@@ -211,7 +175,6 @@ export async function setRolePermissions(roleId, permissionsPayload, options = {
     throw err;
   }
 
-  // Priority 1: Minimum permission rule
   if (!hasAtLeastOnePermission(permissionsPayload)) {
     const err = new Error('Every role must have at least one permission assigned. Roles with zero permissions are not allowed.');
     err.code = 'MINIMUM_PERMISSION_REQUIRED';
@@ -222,7 +185,6 @@ export async function setRolePermissions(roleId, permissionsPayload, options = {
   const catalog = await getPermissionCatalog();
   const catalogMap = new Map(catalog.map((p) => [`${p.module}:${p.action}`, p._id]));
 
-  // Build documents for role_permissions
   const newAssignments = [];
   const cleanPermissionsObj = buildEmptyPermissionsMatrix();
 
@@ -249,7 +211,6 @@ export async function setRolePermissions(roleId, permissionsPayload, options = {
     }
   }
 
-  // Double check that at least one assignment is generated
   if (newAssignments.length === 0) {
     const err = new Error('Every role must have at least one permission assigned. Roles with zero permissions are not allowed.');
     err.code = 'MINIMUM_PERMISSION_REQUIRED';
@@ -257,11 +218,9 @@ export async function setRolePermissions(roleId, permissionsPayload, options = {
     throw err;
   }
 
-  // Clear existing role_permissions for this role and insert new ones
   await RolePermission.deleteMany({ roleId: role._id });
   await RolePermission.insertMany(newAssignments);
 
-  // Sync to role document for backward compatibility
   role.permissions = cleanPermissionsObj;
   role.markModified('permissions');
   await role.save();

@@ -1,34 +1,15 @@
-/**
- * reportController.js — Controller for Priority 5 Reports & Export
- *
- * Implements the 4 required reports per Task 1 Access Control Specification (Section 20):
- * A. Role Summary Report
- * B. Permission Matrix Report
- * C. Role Assignment Report
- * D. Inactive Roles Report
- *
- * Data source: Real MongoDB Role records.
- * Secure CSV export with audit logging.
- */
 
 import { Role } from '../models/Role.js';
 import { MODULES_METADATA, PERMISSION_ACTIONS_METADATA } from '../data/seedData.js';
 import { recordAuditLog } from '../utils/auditLogger.js';
 import { getAllRolesEffectivePermissions } from '../services/permissionService.js';
 
-/**
- * Helper to escape CSV cell content
- */
 function escapeCsv(val) {
   if (val === null || val === undefined) return '""';
   const str = String(val).replace(/"/g, '""');
   return `"${str}"`;
 }
 
-/**
- * GET /api/reports/role-summary
- * Report A: Role Summary Report
- */
 export const getRoleSummaryReport = async (req, res, next) => {
   try {
     const { q, status, branchScope } = req.query;
@@ -79,10 +60,6 @@ export const getRoleSummaryReport = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/reports/permission-matrix
- * Report B: Permission Matrix Report
- */
 export const getPermissionMatrixReport = async (req, res, next) => {
   try {
     const { roleId, module: targetModule, status } = req.query;
@@ -158,10 +135,6 @@ export const getPermissionMatrixReport = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/reports/role-assignment
- * Report C: Role Assignment Report (Aggregated with Scope Transparency)
- */
 export const getRoleAssignmentReport = async (req, res, next) => {
   try {
     const { q, minUsers } = req.query;
@@ -212,10 +185,6 @@ export const getRoleAssignmentReport = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/reports/inactive-roles
- * Report D: Inactive Roles Report
- */
 export const getInactiveRolesReport = async (req, res, next) => {
   try {
     const { q, branchScope } = req.query;
@@ -261,10 +230,6 @@ export const getInactiveRolesReport = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/reports/export?type=summary|matrix|assignment|inactive&format=csv
- * Universal Export Handler with Audit Logging
- */
 export const exportReport = async (req, res, next) => {
   try {
     const { type = 'summary', q, status, branchScope, roleId, module: targetModule } = req.query;
@@ -409,7 +374,6 @@ export const exportReport = async (req, res, next) => {
       });
     }
 
-    // Record persistent audit log for the report export
     await recordAuditLog({
       action: 'REPORT_EXPORTED',
       actionDisplay: 'Report Exported',

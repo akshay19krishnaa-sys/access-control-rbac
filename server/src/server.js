@@ -5,7 +5,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables from server/.env
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 import app from './app.js';
@@ -22,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 
 const seedDatabaseIfEmpty = async () => {
   try {
-    // Ensure the 41-permission catalog is seeded in MongoDB
+
     await seedPermissionCatalog();
 
     const count = await Role.countDocuments();
@@ -144,19 +143,16 @@ const seedDatabaseIfEmpty = async () => {
 
 const startServer = async () => {
   try {
-    // 1. Connect to MongoDB
+
     await connectDB();
 
-    // 2. Seed database if empty
     await seedDatabaseIfEmpty();
 
-    // 3. Start listening
     const server = app.listen(PORT, () => {
       console.log(`[Server] RBAC API Server is running on http://localhost:${PORT}`);
       console.log(`[Server] Health check available at: http://localhost:${PORT}/api/health`);
     });
 
-    // Graceful shutdown handling
     const shutdown = async (signal) => {
       console.log(`\n[Server] Received ${signal}. Shutting down gracefully...`);
       server.close(() => {

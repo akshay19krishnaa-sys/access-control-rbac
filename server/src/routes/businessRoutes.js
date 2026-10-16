@@ -1,18 +1,9 @@
-/**
- * businessRoutes.js — Protected Business Module & Branch-Scoped Routes
- *
- * Demonstrates and enforces:
- * - Module/Action authorization (View, Create, Edit, Delete, Approve, Export)
- * - Branch scope enforcement (Assigned Branch, Selected Branches, All Branches)
- * - Server-side trusted user resolution without client impersonation
- */
 
 import express from 'express';
 import { verifyPermission, verifyBranchScope, createTrustedToken } from '../middleware/authorize.js';
 
 const router = express.Router();
 
-// ─── Test Session Token Generator ───────────────────────────────────────────
 router.post('/test-session', (req, res) => {
   const token = createTrustedToken(req.body);
   res.status(200).json({
@@ -21,7 +12,6 @@ router.post('/test-session', (req, res) => {
   });
 });
 
-// ─── Module: Savings (View, Create, Edit, Delete) ─────────────────────────────
 router.get(
   '/savings',
   verifyPermission('savings', 'view'),
@@ -92,7 +82,6 @@ router.delete(
   }
 );
 
-// ─── Module: Loan (Approve) ───────────────────────────────────────────────────
 router.post(
   '/loan/approve',
   verifyPermission('loan', 'approve'),
@@ -111,7 +100,6 @@ router.post(
   }
 );
 
-// ─── Module: Reports (Export) ────────────────────────────────────────────────
 router.get(
   '/reports/export',
   verifyPermission('reports', 'export'),
@@ -129,7 +117,6 @@ router.get(
   }
 );
 
-// ─── Branch Scope Enforcement Test Endpoints ─────────────────────────────────
 router.get(
   '/branches/:branchId/data',
   verifyPermission('savings', 'view'),

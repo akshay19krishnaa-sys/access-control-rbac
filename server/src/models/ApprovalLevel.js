@@ -1,8 +1,5 @@
 import mongoose from 'mongoose';
 
-/**
- * ApprovalLevel Schema — Mongoose schema for Multi-tier Approval Workflows
- */
 const ApprovalLevelSchema = new mongoose.Schema(
   {
     levelNumber: {
@@ -89,7 +86,6 @@ const ApprovalLevelSchema = new mongoose.Schema(
   }
 );
 
-// Ensure levelNumber is unique
 ApprovalLevelSchema.index({ levelNumber: 1 }, { unique: true });
 
 export const ApprovalLevel = mongoose.model('ApprovalLevel', ApprovalLevelSchema);

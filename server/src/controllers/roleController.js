@@ -8,9 +8,6 @@ import {
   setRolePermissions,
 } from '../services/permissionService.js';
 
-/**
- * Helper: Find a role by MongoDB _id or string id
- */
 const findRoleByIdOrCustom = async (id) => {
   if (mongoose.Types.ObjectId.isValid(id)) {
     return await Role.findById(id);
@@ -18,10 +15,6 @@ const findRoleByIdOrCustom = async (id) => {
   return null;
 };
 
-/**
- * GET /api/roles
- * Retrieves all roles with optional filtering (search, status, branchScope).
- */
 export const getRoles = async (req, res, next) => {
   try {
     const { q, status, branchScope } = req.query;
@@ -66,10 +59,6 @@ export const getRoles = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/roles/:id
- * Retrieves a single role by ID.
- */
 export const getRoleById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -98,10 +87,6 @@ export const getRoleById = async (req, res, next) => {
   }
 };
 
-/**
- * POST /api/roles
- * Creates a new custom role.
- */
 export const createRole = async (req, res, next) => {
   try {
     const {
@@ -136,7 +121,6 @@ export const createRole = async (req, res, next) => {
       });
     }
 
-    // Check duplicate name (case-insensitive)
     const existing = await Role.findOne({
       name: { $regex: `^${name.trim()}$`, $options: 'i' },
     });
@@ -151,7 +135,6 @@ export const createRole = async (req, res, next) => {
       });
     }
 
-    // Priority 1 — Minimum Permission Rule: reject role creation if all permissions are false or empty
     if (!hasAtLeastOnePermission(permissions)) {
       return res.status(400).json({
         success: false,
@@ -176,7 +159,6 @@ export const createRole = async (req, res, next) => {
       permissions: permissions || {},
     });
 
-    // Populate normalized role_permissions collection as authoritative source
     await setRolePermissions(newRole._id, permissions);
 
     await recordAuditLog({
@@ -203,10 +185,6 @@ export const createRole = async (req, res, next) => {
   }
 };
 
-/**
- * PUT /api/roles/:id
- * Updates an existing role's details.
- */
 export const updateRole = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -234,7 +212,6 @@ export const updateRole = async (req, res, next) => {
       permissions,
     } = req.body;
 
-    // Snapshot existing values for differential audit logging
     const prevName = role.name;
     const prevDesc = role.description;
     const prevBranchScope = role.branchScope;
@@ -242,7 +219,6 @@ export const updateRole = async (req, res, next) => {
     const prevStatus = role.status;
     const prevPermissions = role.permissions;
 
-    // If role is System Administrator, protect core identity
     if (role.isSystem && name && name.trim().toLowerCase() !== role.name.toLowerCase()) {
       return res.status(403).json({
         success: false,
@@ -253,7 +229,6 @@ export const updateRole = async (req, res, next) => {
       });
     }
 
-    // Priority 2: Protect System Administrator permissions against unauthorized reduction or modification
     if ((role.isSystem || role.name.toLowerCase() === 'system administrator') && permissions !== undefined) {
       return res.status(403).json({
         success: false,
@@ -264,7 +239,6 @@ export const updateRole = async (req, res, next) => {
       });
     }
 
-    // Priority 1: Minimum Permission Rule: reject if all permissions are false or empty
     if (permissions !== undefined && !hasAtLeastOnePermission(permissions)) {
       return res.status(400).json({
         success: false,
@@ -275,7 +249,6 @@ export const updateRole = async (req, res, next) => {
       });
     }
 
-    // Check duplicate name if renamed
     if (name && name.trim().toLowerCase() !== role.name.toLowerCase()) {
       const existing = await Role.findOne({
         _id: { $ne: role._id },
@@ -307,7 +280,6 @@ export const updateRole = async (req, res, next) => {
 
     await role.save();
 
-    // ── Audit Logging for specific events ─────────────────────────────────────
     if (branchScope && branchScope !== prevBranchScope) {
       await recordAuditLog({
         action: 'BRANCH_SCOPE_CHANGED',
@@ -397,14 +369,6 @@ export const updateRole = async (req, res, next) => {
   }
 };
 
-/**
- * PATCH /api/roles/:id/status
- * Updates a role's status (ACTIVE <-> INACTIVE).
- * Enforces business rules:
- * - System Administrator cannot be deactivated.
- * - At least one active System Administrator must always exist.
- * - Inactive roles cannot have users assigned without reassignment.
- */
 export const patchRoleStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -427,7 +391,6 @@ export const patchRoleStatus = async (req, res, next) => {
       ? 'INACTIVE'
       : 'ACTIVE';
 
-    // 1. Prevent deactivation of System Administrator
     if (targetStatus === 'INACTIVE') {
       if (role.isSystem || role.name.toLowerCase() === 'system administrator') {
         return res.status(403).json({
@@ -439,7 +402,6 @@ export const patchRoleStatus = async (req, res, next) => {
         });
       }
 
-      // 2. Ensure at least one active System Administrator exists
       const activeAdminCount = await Role.countDocuments({
         $or: [{ isSystem: true }, { name: { $regex: /system administrator/i } }],
         status: 'ACTIVE',
@@ -455,7 +417,6 @@ export const patchRoleStatus = async (req, res, next) => {
         });
       }
 
-      // 3. Rule: Inactive roles cannot be assigned
       if (role.usersAssigned > 0) {
         return res.status(400).json({
           success: false,
@@ -494,10 +455,6 @@ export const patchRoleStatus = async (req, res, next) => {
   }
 };
 
-/**
- * POST /api/roles/:id/clone
- * Clones a role into a new custom role with copied permissions.
- */
 export const cloneRole = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -513,7 +470,6 @@ export const cloneRole = async (req, res, next) => {
       });
     }
 
-    // Determine unique name for the clone
     let candidateName = `Copy of ${sourceRole.name}`;
     let counter = 2;
 
@@ -571,10 +527,6 @@ export const cloneRole = async (req, res, next) => {
   }
 };
 
-/**
- * DELETE /api/roles/:id
- * Requirement 9: "Do not permanently delete roles; use deactivation."
- */
 export const deleteRole = async (req, res) => {
   return res.status(405).json({
     success: false,

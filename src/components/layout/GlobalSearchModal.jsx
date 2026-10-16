@@ -36,7 +36,7 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
   const handleSelectRole = useCallback(
     (role) => {
       onClose();
-      // Navigate to Roles with search query pre-filled
+
       navigate(`/roles?q=${encodeURIComponent(role.name)}`);
     },
     [navigate, onClose]
@@ -52,7 +52,6 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
     [navigate, onClose]
   );
 
-  // Focus input whenever modal opens
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
@@ -62,7 +61,6 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  // Debounced live fetch
   useEffect(() => {
     if (!isOpen) return;
 
@@ -108,7 +106,6 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
     };
   }, [query, isOpen]);
 
-  // Handle keyboard navigation (ArrowUp, ArrowDown, Enter, Escape)
   const handleKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') {
@@ -147,7 +144,7 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
       aria-label="Global Search"
     >
       <div className="search-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Search Input Bar */}
+
         <div className="search-modal__input-wrap">
           <SearchIcon />
           <input
@@ -177,7 +174,6 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* Results Area */}
         <div className="search-modal__results" role="listbox">
           {loading && (
             <div className="search-modal__empty-state">
@@ -322,7 +318,6 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
             })}
         </div>
 
-        {/* Footer */}
         <div className="search-modal__footer">
           <div className="flex items-center gap-3">
             <span>

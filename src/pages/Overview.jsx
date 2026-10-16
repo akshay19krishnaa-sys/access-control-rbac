@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getRolesApi, getAuditLogsApi } from '../services/api';
 
-/* ── Stat card data ── */
 const STATS = [
   {
     id: 'total-roles',
@@ -68,7 +67,6 @@ const STATS = [
   },
 ];
 
-/* ── Fallback recent activity feed ── */
 const FALLBACK_ACTIVITY = [
   { id: 1, action: 'Role <strong>Finance Manager</strong> was created by', actor: 'Alice Johnson', time: '2 minutes ago', color: '#176B87' },
   { id: 2, action: 'Permission <strong>export:reports</strong> added to', actor: 'HR Admin role', time: '18 minutes ago', color: '#10b981' },
@@ -77,7 +75,6 @@ const FALLBACK_ACTIVITY = [
   { id: 5, action: 'Role <strong>Viewer</strong> permissions were updated by', actor: 'Super Admin', time: '5 hours ago', color: '#ec4899' },
 ];
 
-/* ── Quick access links ── */
 const QUICK_LINKS = [
   { label: 'Manage Roles',            to: '/roles' },
   { label: 'Edit Permission Matrix',  to: '/permission-matrix' },
@@ -130,7 +127,7 @@ function Overview() {
 
   return (
     <div>
-      {/* Page Header */}
+
       <div className="page-header">
         <div className="page-header__left">
           <h2 className="page-header__title">Dashboard Overview</h2>
@@ -143,7 +140,6 @@ function Overview() {
         </div>
       </div>
 
-      {/* Stats Grid */}
       <div className="overview-stats-grid">
         {STATS.map((stat) => (
           <div key={stat.id} className="stat-card" id={`stat-${stat.id}`}>
@@ -163,9 +159,8 @@ function Overview() {
         ))}
       </div>
 
-      {/* Content Grid */}
       <div className="overview-content-grid">
-        {/* Recent Activity */}
+
         <div className="card">
           <div className="card-header">
             <div>
@@ -234,7 +229,6 @@ function Overview() {
           </div>
         </div>
 
-        {/* Quick Access */}
         <div className="card">
           <div className="card-header">
             <div>
@@ -259,7 +253,6 @@ function Overview() {
               ))}
             </div>
 
-            {/* System Health Indicator */}
             <div className="mt-6 p-4 rounded-xl border border-emerald-100 bg-emerald-50">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />

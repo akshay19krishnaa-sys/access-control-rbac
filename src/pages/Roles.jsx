@@ -12,7 +12,6 @@ import RoleFormPanel from '../components/roles/RoleFormPanel';
 import RoleDetailPanel from '../components/roles/RoleDetailPanel';
 import ConfirmDialog from '../components/roles/ConfirmDialog';
 
-/* ── Icons ── */
 const PlusIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
     <line x1="12" y1="5" x2="12" y2="19" />
@@ -102,7 +101,6 @@ const EmptyBoxIcon = () => (
   </svg>
 );
 
-/* Helper to get initials */
 const getInitials = (name) => {
   if (!name || typeof name !== 'string' || !name.trim()) return 'NA';
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -110,18 +108,16 @@ const getInitials = (name) => {
   return parts.map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 };
 
-/* Avatar background palette */
 const AVATAR_COLORS = [
   '#176B87', '#1f8aa8', '#2a94b5', '#4b98cf', '#86B6F6',
   '#0891b2', '#0e7490', '#135870', '#5c9ce6'
 ];
 
 function Roles() {
-  /* ── State ── */
+
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Toast notification
   const [toast, setToast] = useState(null);
   const toastTimeoutRef = useRef(null);
 
@@ -167,9 +163,8 @@ function Roles() {
     }
   }, [searchParams]);
 
-  // Priority 3: Role list sorting state
   const [sortField, setSortField] = useState('name');
-  const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
+  const [sortDirection, setSortDirection] = useState('asc');
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -180,15 +175,12 @@ function Roles() {
     }
   };
 
-  // Active dropdown menu for actions: roleId or null
   const [activeMenuRoleId, setActiveMenuRoleId] = useState(null);
 
-  // Modal / Panel states
   const [formPanel, setFormPanel] = useState({ isOpen: false, mode: 'create', roleData: null });
   const [detailRole, setDetailRole] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: 'activate', role: null });
 
-  // Close dropdown on click outside
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (!e.target.closest('.action-menu')) {
@@ -199,21 +191,18 @@ function Roles() {
     return () => document.removeEventListener('click', handleOutsideClick);
   }, []);
 
-  /* ── Filtered, Searched & Sorted Roles ── */
   const filteredRoles = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     const result = roles.filter((role) => {
-      // Search matching role name or description
+
       const matchesSearch =
         !query ||
         role.name.toLowerCase().includes(query) ||
         (role.description && role.description.toLowerCase().includes(query));
 
-      // Scope match
       const matchesScope =
         selectedScope === 'all' || role.branchScope === selectedScope;
 
-      // Status match (case-insensitive for both ACTIVE and active)
       const matchesStatus =
         selectedStatus === 'all' ||
         (role.status || '').toLowerCase() === selectedStatus.toLowerCase();
@@ -221,7 +210,6 @@ function Roles() {
       return matchesSearch && matchesScope && matchesStatus;
     });
 
-    // Priority 3: Sort by Name, Users Assigned, or Created Date
     result.sort((a, b) => {
       let comparison = 0;
       if (sortField === 'name') {
@@ -241,7 +229,6 @@ function Roles() {
     return result;
   }, [roles, searchQuery, selectedScope, selectedStatus, sortField, sortDirection]);
 
-  /* ── Handlers ── */
   const handleOpenCreate = () => {
     setActiveMenuRoleId(null);
     setFormPanel({ isOpen: true, mode: 'create', roleData: null });
@@ -279,7 +266,6 @@ function Roles() {
         prev.map((r) => (r.id === role.id ? updated : r))
       );
 
-      // If detail view is open for this role, update it too
       if (detailRole && detailRole.id === role.id) {
         setDetailRole(updated);
       }
@@ -331,7 +317,6 @@ function Roles() {
     }
   };
 
-  /* ── CSV Export ── */
   const handleExportCSV = () => {
     if (filteredRoles.length === 0) {
       showToast('No roles to export based on current filters.', 'warning');
@@ -398,7 +383,7 @@ function Roles() {
 
   return (
     <div>
-      {/* ── Page Header ── */}
+
       <div className="page-header">
         <div className="page-header__left">
           <h2 className="page-header__title" id="roles-heading">Role Management</h2>
@@ -419,9 +404,8 @@ function Roles() {
         </div>
       </div>
 
-      {/* ── Toolbar: Search, Filters, Export ── */}
       <div className="roles-toolbar" role="region" aria-label="Role filters and search">
-        {/* Search */}
+
         <div className="roles-search">
           <span className="roles-search__icon" aria-hidden="true">
             <SearchIcon />
@@ -437,7 +421,6 @@ function Roles() {
           />
         </div>
 
-        {/* Branch Scope Filter */}
         <select
           className="roles-filter-select"
           value={selectedScope}
@@ -453,7 +436,6 @@ function Roles() {
           ))}
         </select>
 
-        {/* Status Filter */}
         <select
           className="roles-filter-select"
           value={selectedStatus}
@@ -466,7 +448,6 @@ function Roles() {
           <option value="inactive">Inactive Only</option>
         </select>
 
-        {/* Clear Filters (if active) */}
         {hasActiveFilters && (
           <button
             className="btn btn-secondary btn-sm"
@@ -479,7 +460,6 @@ function Roles() {
           </button>
         )}
 
-        {/* CSV Export Button */}
         <button
           className="btn btn-secondary btn-sm"
           onClick={handleExportCSV}
@@ -491,13 +471,12 @@ function Roles() {
         </button>
       </div>
 
-      {/* ── Table Container ── */}
       <div className="roles-table-wrap">
         <div className="roles-table-scroll">
           <table className="roles-table" aria-label="Roles list">
             <thead>
               <tr>
-                {/* Role Name (Sortable) */}
+
                 <th
                   scope="col"
                   style={{ width: '28%', cursor: 'pointer', userSelect: 'none' }}
@@ -530,7 +509,6 @@ function Roles() {
 
                 <th scope="col" style={{ width: '28%' }}>Description</th>
 
-                {/* Users Assigned (Sortable) */}
                 <th
                   scope="col"
                   className="col-center"
@@ -565,7 +543,6 @@ function Roles() {
                 <th scope="col" style={{ width: '14%' }}>Branch Scope</th>
                 <th scope="col" style={{ width: '8%' }}>Status</th>
 
-                {/* Created Date (Sortable) */}
                 <th
                   scope="col"
                   style={{ width: '10%', cursor: 'pointer', userSelect: 'none' }}
@@ -618,7 +595,7 @@ function Roles() {
 
                   return (
                     <tr key={role.id} id={`role-row-${role.id}`}>
-                      {/* Role Name + Avatar + System Tag */}
+
                       <td>
                         <div className="role-name-cell">
                           <div
@@ -642,7 +619,6 @@ function Roles() {
                         </div>
                       </td>
 
-                      {/* Description */}
                       <td>
                         <div
                           className="role-name-cell__desc"
@@ -653,7 +629,6 @@ function Roles() {
                         </div>
                       </td>
 
-                      {/* Users Assigned */}
                       <td className="col-center">
                         <span className="users-count">
                           <UsersIcon />
@@ -661,7 +636,6 @@ function Roles() {
                         </span>
                       </td>
 
-                      {/* Branch Scope */}
                       <td>
                         <span
                           className={`scope-badge ${
@@ -678,21 +652,18 @@ function Roles() {
                         </span>
                       </td>
 
-                      {/* Status */}
                       <td>
                         <span className={`status-badge ${(role.status || '').toLowerCase()}`}>
                           {(role.status || '').toLowerCase() === 'active' ? 'Active' : 'Inactive'}
                         </span>
                       </td>
 
-                      {/* Created Date */}
                       <td>
                         <span className="created-date">
                           {role.createdDate || (role.createdAt ? new Date(role.createdAt).toISOString().slice(0, 10) : '—')}
                         </span>
                       </td>
 
-                      {/* Actions */}
                       <td className="col-right">
                         <div className="action-menu">
                           <button
@@ -715,7 +686,7 @@ function Roles() {
                               aria-label="Role actions"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              {/* View Action */}
+
                               <button
                                 className="action-menu__item"
                                 role="menuitem"
@@ -726,7 +697,6 @@ function Roles() {
                                 View Details
                               </button>
 
-                              {/* Edit Action */}
                               <button
                                 className="action-menu__item"
                                 role="menuitem"
@@ -739,7 +709,6 @@ function Roles() {
                                 Edit Role
                               </button>
 
-                              {/* Clone Action */}
                               <button
                                 className="action-menu__item"
                                 role="menuitem"
@@ -752,7 +721,6 @@ function Roles() {
 
                               <div className="action-menu__divider" />
 
-                              {/* Activate / Deactivate Action */}
                               {(role.status || '').toLowerCase() === 'active' ? (
                                 <button
                                   className="action-menu__item deactivate"
@@ -784,7 +752,7 @@ function Roles() {
                   );
                 })
               ) : (
-                /* Empty state when filters return no results */
+
                 <tr>
                   <td colSpan="7">
                     <div className="roles-empty">
@@ -813,7 +781,6 @@ function Roles() {
           </table>
         </div>
 
-        {/* ── Table Footer ── */}
         <div className="roles-table-footer">
           <div className="roles-count-text">
             Showing <strong>{filteredRoles.length}</strong> of <strong>{roles.length}</strong> total roles
@@ -830,7 +797,6 @@ function Roles() {
         </div>
       </div>
 
-      {/* ── Role Detail Slide-Over Panel ── */}
       {detailRole && (
         <RoleDetailPanel
           role={detailRole}
@@ -839,7 +805,6 @@ function Roles() {
         />
       )}
 
-      {/* ── Role Form Slide-Over Panel (Create / Edit / Clone) ── */}
       {formPanel.isOpen && (
         <RoleFormPanel
           mode={formPanel.mode}
@@ -850,7 +815,6 @@ function Roles() {
         />
       )}
 
-      {/* ── Confirm Activate/Deactivate Dialog ── */}
       {confirmDialog.isOpen && (
         <ConfirmDialog
           action={confirmDialog.action}
@@ -860,7 +824,6 @@ function Roles() {
         />
       )}
 
-      {/* ── Feedback Toast ── */}
       {toast && (
         <div className="toast-container" aria-live="polite">
           <div className={`toast toast-${toast.type}`}>

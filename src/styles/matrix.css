@@ -1,11 +1,4 @@
-/* =============================================
-   PERMISSION MATRIX STYLES — Phase 3
-   Color Palette: #EEF5FF, #B4D4FF, #86B6F6, #176B87
-   ============================================= */
 
-/* ══════════════════════════════════════════════
-   Role Selector Header Card
-   ══════════════════════════════════════════════ */
 .matrix-role-card {
   background: #ffffff;
   border: 1px solid #B4D4FF;
@@ -153,9 +146,6 @@
   transition: width var(--transition-normal);
 }
 
-/* ══════════════════════════════════════════════
-   Unsaved Changes Alert Banner
-   ══════════════════════════════════════════════ */
 .matrix-unsaved-banner {
   background: #EEF5FF;
   border: 1.5px solid #86B6F6;
@@ -213,9 +203,6 @@
   gap: var(--spacing-sm);
 }
 
-/* ══════════════════════════════════════════════
-   Matrix Toolbar
-   ══════════════════════════════════════════════ */
 .matrix-toolbar {
   display: flex;
   align-items: center;
@@ -286,9 +273,6 @@
   flex-wrap: wrap;
 }
 
-/* ══════════════════════════════════════════════
-   Interactive Matrix Table
-   ══════════════════════════════════════════════ */
 .matrix-table-wrap {
   background: #ffffff;
   border: 1px solid #B4D4FF;
@@ -309,7 +293,6 @@
   min-width: 820px;
 }
 
-/* Table Header */
 .matrix-table thead tr {
   background: #EEF5FF;
   border-bottom: 2px solid #B4D4FF;
@@ -369,7 +352,6 @@
   opacity: 0.75;
 }
 
-/* Table Body */
 .matrix-table tbody tr {
   border-bottom: 1px solid #EEF5FF;
   transition: background var(--transition-fast);
@@ -402,7 +384,6 @@
   background: #f4f8fe;
 }
 
-/* Module Info Cell */
 .matrix-module-info {
   display: flex;
   align-items: center;
@@ -467,9 +448,6 @@
   color: #0e4253;
 }
 
-/* ══════════════════════════════════════════════
-   Permission Toggle / Checkbox Control
-   ══════════════════════════════════════════════ */
 .perm-control {
   display: inline-flex;
   align-items: center;
@@ -526,7 +504,6 @@
   margin-top: -2px;
 }
 
-/* Not Applicable State */
 .perm-na-cell {
   display: inline-flex;
   align-items: center;
@@ -539,9 +516,6 @@
   user-select: none;
 }
 
-/* ══════════════════════════════════════════════
-   Matrix Table Footer Summary
-   ══════════════════════════════════════════════ */
 .matrix-table-footer {
   display: flex;
   align-items: center;
@@ -595,9 +569,6 @@
   font-weight: 800;
 }
 
-/* ══════════════════════════════════════════════
-   Confirmation Modal for Switching Roles
-   ══════════════════════════════════════════════ */
 .matrix-modal-backdrop {
   position: fixed;
   inset: 0;

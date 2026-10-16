@@ -1,18 +1,9 @@
-/**
- * permissions.js — Master configuration and storage for Phase 3 Permission Matrix.
- *
- * Defines modules, permission actions, applicability rules, and realistic
- * default permission sets for each role.
- *
- * Persists changes in localStorage so customizations survive page refreshes.
- */
 
 import { MOCK_ROLES } from './roles.js';
 
 export const PERMISSION_STORAGE_KEY = 'rbac_matrix_permissions';
 export const ROLES_STORAGE_KEY = 'rbac_matrix_roles';
 
-// ─── Supported Permission Actions ───────────────────────────────────────────
 export const PERMISSION_ACTIONS = [
   { id: 'view',    label: 'View',    description: 'Read and inspect module data' },
   { id: 'create',  label: 'Create',  description: 'Add new records or accounts' },
@@ -22,7 +13,6 @@ export const PERMISSION_ACTIONS = [
   { id: 'export',  label: 'Export',  description: 'Download CSV or PDF reports' },
 ];
 
-// ─── Modules in Bank / Financial RBAC ───────────────────────────────────────
 export const MODULES = [
   {
     id: 'dashboard',
@@ -84,15 +74,13 @@ export const MODULES = [
   },
 ];
 
-// Helper to check if an action is applicable to a module
 export const isActionApplicable = (moduleId, actionId) => {
   const mod = MODULES.find((m) => m.id === moduleId);
   return mod ? mod.applicable.includes(actionId) : false;
 };
 
-// ─── Default Realistic Permissions for Mock Roles ──────────────────────────
 export const DEFAULT_ROLE_PERMISSIONS = {
-  // System Administrator: Full unrestricted access
+
   'role-001': {
     dashboard:  { view: true,  create: false, edit: false, delete: false, approve: false, export: true  },
     customers:  { view: true,  create: true,  edit: true,  delete: true,  approve: true,  export: true  },
@@ -104,7 +92,6 @@ export const DEFAULT_ROLE_PERMISSIONS = {
     reports:    { view: true,  create: true,  edit: false, delete: false, approve: false, export: true  },
   },
 
-  // Branch Manager: Operational lead with approval authority, no hard deletion of financial records
   'role-002': {
     dashboard:  { view: true,  create: false, edit: false, delete: false, approve: false, export: true  },
     customers:  { view: true,  create: true,  edit: true,  delete: false, approve: true,  export: true  },
@@ -116,7 +103,6 @@ export const DEFAULT_ROLE_PERMISSIONS = {
     reports:    { view: true,  create: true,  edit: false, delete: false, approve: false, export: true  },
   },
 
-  // Cashier: Daily counter teller transactions, no approvals or deletions
   'role-003': {
     dashboard:  { view: true,  create: false, edit: false, delete: false, approve: false, export: false },
     customers:  { view: true,  create: false, edit: false, delete: false, approve: false, export: false },
@@ -128,7 +114,6 @@ export const DEFAULT_ROLE_PERMISSIONS = {
     reports:    { view: false, create: false, edit: false, delete: false, approve: false, export: false },
   },
 
-  // Accountant: Financial ledgers, reconciliations, exports
   'role-004': {
     dashboard:  { view: true,  create: false, edit: false, delete: false, approve: false, export: true  },
     customers:  { view: true,  create: false, edit: false, delete: false, approve: false, export: true  },
@@ -140,7 +125,6 @@ export const DEFAULT_ROLE_PERMISSIONS = {
     reports:    { view: true,  create: true,  edit: false, delete: false, approve: false, export: true  },
   },
 
-  // Auditor: Read-only and export across all modules (strict compliance)
   'role-005': {
     dashboard:  { view: true,  create: false, edit: false, delete: false, approve: false, export: true  },
     customers:  { view: true,  create: false, edit: false, delete: false, approve: false, export: true  },
@@ -152,7 +136,6 @@ export const DEFAULT_ROLE_PERMISSIONS = {
     reports:    { view: true,  create: false, edit: false, delete: false, approve: false, export: true  },
   },
 
-  // Loan Officer: Specialized underwriting and loan approvals
   'role-006': {
     dashboard:  { view: true,  create: false, edit: false, delete: false, approve: false, export: false },
     customers:  { view: true,  create: true,  edit: true,  delete: false, approve: false, export: true  },
@@ -164,7 +147,6 @@ export const DEFAULT_ROLE_PERMISSIONS = {
     reports:    { view: true,  create: false, edit: false, delete: false, approve: false, export: true  },
   },
 
-  // Customer Service: Front-office inquiries and basic profile updates
   'role-007': {
     dashboard:  { view: true,  create: false, edit: false, delete: false, approve: false, export: false },
     customers:  { view: true,  create: true,  edit: true,  delete: false, approve: false, export: false },
@@ -177,7 +159,6 @@ export const DEFAULT_ROLE_PERMISSIONS = {
   },
 };
 
-// Generates an empty permission matrix for a new or uninitialized role
 export const createEmptyRolePermissions = () => {
   const result = {};
   MODULES.forEach((mod) => {
@@ -193,7 +174,6 @@ export const createEmptyRolePermissions = () => {
   return result;
 };
 
-// ─── LocalStorage Persistence Helpers ───────────────────────────────────────
 export const loadSavedPermissions = () => {
   try {
     const raw = localStorage.getItem(PERMISSION_STORAGE_KEY);

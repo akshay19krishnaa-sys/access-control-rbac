@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
 
-/**
- * Role Schema — RBAC Role entity
- * Enforces field validations, limits, uniqueness, and module-level permissions structure.
- */
 const RoleSchema = new mongoose.Schema(
   {
     name: {
@@ -76,9 +72,9 @@ const RoleSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
       transform: (doc, ret) => {
-        // Map _id to id for seamless frontend compatibility
+
         ret.id = ret._id.toString();
-        // Provide lowercase status for backward compatibility with existing components
+
         ret.statusLower = ret.status ? ret.status.toLowerCase() : 'active';
         return ret;
       },
@@ -94,7 +90,6 @@ const RoleSchema = new mongoose.Schema(
   }
 );
 
-// Case-insensitive collation index on name for strict uniqueness
 RoleSchema.index({ name: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 
 export const Role = mongoose.model('Role', RoleSchema);

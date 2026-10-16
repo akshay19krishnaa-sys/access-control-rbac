@@ -1,15 +1,3 @@
-/**
- * errorHandler.js — Centralized error handling middleware.
- * Ensures uniform error format:
- * {
- *   success: false,
- *   error: {
- *     message: string,
- *     code: string,
- *     details?: Array<string | object>
- *   }
- * }
- */
 
 export const notFoundHandler = (req, res) => {
   res.status(404).json({
@@ -24,7 +12,6 @@ export const notFoundHandler = (req, res) => {
 export const globalErrorHandler = (err, req, res, _next) => {
   console.error('[Error Handler]', err);
 
-  // 1. Mongoose Duplicate Key Error (e.g. role name uniqueness)
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || 'field';
     const value = err.keyValue ? err.keyValue[field] : '';
@@ -38,7 +25,6 @@ export const globalErrorHandler = (err, req, res, _next) => {
     });
   }
 
-  // 2. Mongoose Validation Error
   if (err.name === 'ValidationError') {
     const details = Object.values(err.errors).map((e) => ({
       field: e.path,
@@ -55,7 +41,6 @@ export const globalErrorHandler = (err, req, res, _next) => {
     });
   }
 
-  // 3. Mongoose Invalid ObjectId (CastError)
   if (err.name === 'CastError') {
     return res.status(400).json({
       success: false,
@@ -66,7 +51,6 @@ export const globalErrorHandler = (err, req, res, _next) => {
     });
   }
 
-  // 4. Custom Application Errors
   const statusCode = err.statusCode || 500;
   return res.status(statusCode).json({
     success: false,

@@ -1,9 +1,6 @@
 import { AuditLog } from '../models/AuditLog.js';
 import { AuditSetting } from '../models/AuditSetting.js';
 
-/**
- * List of sensitive key substrings that must NEVER be logged in audit records.
- */
 const SENSITIVE_KEY_PATTERNS = [
   'password',
   'token',
@@ -18,9 +15,6 @@ const SENSITIVE_KEY_PATTERNS = [
   'card',
 ];
 
-/**
- * Recursively sanitize an object or value to redact sensitive keys.
- */
 export function sanitizeAuditDetails(data, depth = 0) {
   if (depth > 6 || !data) return data;
 
@@ -48,9 +42,6 @@ export function sanitizeAuditDetails(data, depth = 0) {
   return data;
 }
 
-/**
- * Map an internal action to the corresponding AuditSetting toggle key.
- */
 function getSettingToggleKeyForAction(action) {
   switch (action) {
     case 'ROLE_CREATED':
@@ -71,13 +62,6 @@ function getSettingToggleKeyForAction(action) {
   }
 }
 
-/**
- * Extract legitimate actor information from the request context.
- *
- * If legitimate authenticated user claims exist (e.g. req.auth or headers),
- * extract them. If authentication is not implemented or absent, legitimately
- * represent the actor as system-generated / unavailable (Requirement 9).
- */
 export function extractActorFromRequest(req) {
   if (req && req.auth && req.auth.username) {
     return {
@@ -99,7 +83,6 @@ export function extractActorFromRequest(req) {
     };
   }
 
-  // Legitimate representation when auth is absent:
   return {
     id: null,
     name: 'System / Unavailable',
@@ -109,12 +92,6 @@ export function extractActorFromRequest(req) {
   };
 }
 
-/**
- * recordAuditLog — Core audit logging helper.
- *
- * Persists an audit entry to MongoDB after sanitizing details and verifying
- * active logging configuration.
- */
 export async function recordAuditLog({
   action,
   actionDisplay,
@@ -126,23 +103,20 @@ export async function recordAuditLog({
   status = 'SUCCESS',
 }) {
   try {
-    // 1. Check if event logging is enabled in persistent settings
+
     const toggleKey = getSettingToggleKeyForAction(action);
     if (toggleKey) {
       const setting = await AuditSetting.findOne({ settingKey: 'default' }).lean();
       if (setting && setting.enabledEvents && setting.enabledEvents[toggleKey] === false) {
-        // Logging for this specific event type was explicitly disabled in settings
+
         return null;
       }
     }
 
-    // 2. Extract legitimate actor information
     const actor = extractActorFromRequest(req);
 
-    // 3. Sanitize details to eliminate any sensitive keys/tokens/passwords
     const sanitizedDetails = sanitizeAuditDetails(details);
 
-    // 4. Save to MongoDB
     const auditRecord = await AuditLog.create({
       action,
       actionDisplay: actionDisplay || action,
@@ -157,7 +131,7 @@ export async function recordAuditLog({
 
     return auditRecord;
   } catch (error) {
-    // Audit logging should not crash business transactions, but log errors
+
     console.error('[AuditLogger] Failed to write audit record:', error.message);
     return null;
   }

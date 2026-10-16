@@ -7,7 +7,6 @@ import {
   exportAuditLogsApi,
 } from '../services/api';
 
-/* ── Inline SVG Icons ── */
 const SettingsIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="3" />
@@ -125,10 +124,8 @@ function Settings() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeSection = searchParams.get('section');
 
-  // Sub-tabs in Audit & Logging view: 'settings' | 'logs'
   const [auditTab, setAuditTab] = useState('settings');
 
-  // ── Audit Settings State (Authoritative source: MongoDB) ──
   const [savedSettings, setSavedSettings] = useState(null);
   const [formSettings, setFormSettings] = useState(null);
   const [settingsLoading, setSettingsLoading] = useState(false);
@@ -136,7 +133,6 @@ function Settings() {
   const [settingsError, setSettingsError] = useState(null);
   const [settingsSuccess, setSettingsSuccess] = useState(null);
 
-  // ── Audit Logs State ──
   const [logs, setLogs] = useState([]);
   const [logsLoading, setLogsLoading] = useState(false);
   const [logsError, setLogsError] = useState(null);
@@ -145,16 +141,13 @@ function Settings() {
   const [selectedLogDetail, setSelectedLogDetail] = useState(null);
   const [exporting, setExporting] = useState(false);
 
-  // Info modal for other sections
   const [otherSectionModal, setOtherSectionModal] = useState(null);
 
-  // ── Detect Unsaved Settings Changes ──
   const isSettingsDirty = useMemo(() => {
     if (!savedSettings || !formSettings) return false;
     return JSON.stringify(savedSettings) !== JSON.stringify(formSettings);
   }, [savedSettings, formSettings]);
 
-  // ── Fetch Persistent Settings from MongoDB ──
   const fetchAuditSettings = useCallback(async () => {
     setSettingsLoading(true);
     setSettingsError(null);
@@ -170,7 +163,6 @@ function Settings() {
     }
   }, []);
 
-  // ── Fetch Audit Logs from MongoDB ──
   const fetchAuditLogs = useCallback(async () => {
     setLogsLoading(true);
     setLogsError(null);
@@ -188,7 +180,6 @@ function Settings() {
     }
   }, [logSearchQuery, logFilterAction]);
 
-  // Initial fetch when entering Audit & Logging section
   useEffect(() => {
     if (activeSection !== 'audit') return;
 
@@ -227,7 +218,6 @@ function Settings() {
     };
   }, [activeSection]);
 
-  // ── Save Settings Action ──
   const handleSaveSettings = async () => {
     if (!formSettings || settingsSaving) return;
     setSettingsSaving(true);
@@ -248,7 +238,6 @@ function Settings() {
     }
   };
 
-  // ── Reset Settings Action ──
   const handleResetSettings = () => {
     if (savedSettings) {
       setFormSettings(JSON.parse(JSON.stringify(savedSettings)));
@@ -257,7 +246,6 @@ function Settings() {
     }
   };
 
-  // ── Export Action ──
   const handleExport = async () => {
     setExporting(true);
     try {
@@ -274,7 +262,6 @@ function Settings() {
     }
   };
 
-  // ── Toggle Event Handler ──
   const handleToggleEvent = (key) => {
     if (!formSettings) return;
     setFormSettings((prev) => ({
@@ -286,7 +273,6 @@ function Settings() {
     }));
   };
 
-  // Format timestamp nicely
   const formatTimestamp = (dateString) => {
     if (!dateString) return '—';
     const d = new Date(dateString);
@@ -302,7 +288,7 @@ function Settings() {
 
   return (
     <div className="settings-page">
-      {/* ── Page Header ── */}
+
       <div className="page-header">
         <div className="page-header__left">
           {activeSection === 'audit' ? (
@@ -350,7 +336,6 @@ function Settings() {
         </div>
       </div>
 
-      {/* ── MAIN SECTIONS OVERVIEW (When no section active) ── */}
       {activeSection !== 'audit' && (
         <>
           <div className="settings-overview-grid">
@@ -407,7 +392,6 @@ function Settings() {
             ))}
           </div>
 
-          {/* Info Card */}
           <div className="coming-soon-card">
             <div className="coming-soon-card__icon" aria-hidden="true">
               <SettingsIcon />
@@ -422,10 +406,9 @@ function Settings() {
         </>
       )}
 
-      {/* ── AUDIT & LOGGING MANAGEMENT CONSOLE ── */}
       {activeSection === 'audit' && (
         <div>
-          {/* Sub-tab Navigation */}
+
           <div className="settings-tabs" role="tablist" aria-label="Audit & Logging Views">
             <button
               className={`settings-tab-btn ${auditTab === 'settings' ? 'active' : ''}`}
@@ -450,7 +433,6 @@ function Settings() {
             </button>
           </div>
 
-          {/* Feedback Banners */}
           {settingsSuccess && (
             <div className="mb-6 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -480,7 +462,6 @@ function Settings() {
             </div>
           )}
 
-          {/* ════ TAB 1: POLICIES & RETENTION SETTINGS ════ */}
           {auditTab === 'settings' && (
             <div>
               {settingsLoading || !formSettings ? (
@@ -490,7 +471,7 @@ function Settings() {
                 </div>
               ) : (
                 <>
-                  {/* General Retention & Log Level */}
+
                   <div className="settings-section-card">
                     <div className="settings-section-header">
                       <div className="settings-section-title">Audit Trail Retention & Severity</div>
@@ -500,7 +481,7 @@ function Settings() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Retention Days */}
+
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="setting-retention-days">
                           Retention Period
@@ -529,7 +510,6 @@ function Settings() {
                         </p>
                       </div>
 
-                      {/* Log Level */}
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="setting-log-level">
                           Minimum Log Level
@@ -557,7 +537,6 @@ function Settings() {
                     </div>
                   </div>
 
-                  {/* Granular Event Tracking Policies */}
                   <div className="settings-section-card">
                     <div className="settings-section-header">
                       <div className="settings-section-title">Audit Event Tracking Policies</div>
@@ -567,7 +546,7 @@ function Settings() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Role Created */}
+
                       <label
                         className={`switch-label ${formSettings.enabledEvents.roleCreated ? 'checked' : ''}`}
                         htmlFor="toggle-event-roleCreated"
@@ -592,7 +571,6 @@ function Settings() {
                         </div>
                       </label>
 
-                      {/* Role Updated */}
                       <label
                         className={`switch-label ${formSettings.enabledEvents.roleUpdated ? 'checked' : ''}`}
                         htmlFor="toggle-event-roleUpdated"
@@ -617,7 +595,6 @@ function Settings() {
                         </div>
                       </label>
 
-                      {/* Permission Modified */}
                       <label
                         className={`switch-label ${formSettings.enabledEvents.permissionModified ? 'checked' : ''}`}
                         htmlFor="toggle-event-permissionModified"
@@ -642,7 +619,6 @@ function Settings() {
                         </div>
                       </label>
 
-                      {/* Branch Scope Changed */}
                       <label
                         className={`switch-label ${formSettings.enabledEvents.branchScopeChanged ? 'checked' : ''}`}
                         htmlFor="toggle-event-branchScopeChanged"
@@ -667,7 +643,6 @@ function Settings() {
                         </div>
                       </label>
 
-                      {/* Approval Level Changed */}
                       <label
                         className={`switch-label ${formSettings.enabledEvents.approvalLevelChanged ? 'checked' : ''}`}
                         htmlFor="toggle-event-approvalLevelChanged"
@@ -692,7 +667,6 @@ function Settings() {
                         </div>
                       </label>
 
-                      {/* Role Activated / Deactivated */}
                       <label
                         className={`switch-label ${formSettings.enabledEvents.roleStatusChanged ? 'checked' : ''}`}
                         htmlFor="toggle-event-roleStatusChanged"
@@ -719,7 +693,6 @@ function Settings() {
                     </div>
                   </div>
 
-                  {/* Export & Compliance Schedule */}
                   <div className="settings-section-card">
                     <div className="settings-section-header">
                       <div className="settings-section-title">Compliance Reports & Export Configuration</div>
@@ -729,7 +702,7 @@ function Settings() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      {/* Export Format */}
+
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="setting-export-format">
                           Default Export Format
@@ -750,7 +723,6 @@ function Settings() {
                         </select>
                       </div>
 
-                      {/* Compliance Report Schedule */}
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="setting-compliance-schedule">
                           Compliance Report Schedule
@@ -774,7 +746,6 @@ function Settings() {
                       </div>
                     </div>
 
-                    {/* Secondary Toggles */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <label
                         className={`switch-label ${formSettings.notifyOnCriticalEvents ? 'checked' : ''}`}
@@ -830,7 +801,6 @@ function Settings() {
                     </div>
                   </div>
 
-                  {/* Actions Bar */}
                   <div className="flex items-center justify-between p-4 bg-white border border-[#B4D4FF] rounded-xl shadow-xs">
                     <div className="text-xs text-slate-500">
                       {isSettingsDirty ? (
@@ -868,13 +838,12 @@ function Settings() {
             </div>
           )}
 
-          {/* ════ TAB 2: AUDIT TRAIL LOG VIEWER ════ */}
           {auditTab === 'logs' && (
             <div>
-              {/* Filter & Search Toolbar */}
+
               <div className="audit-toolbar">
                 <div className="audit-toolbar__left">
-                  {/* Search Input */}
+
                   <div className="relative flex-1 min-w-[220px]">
                     <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                       <SearchIcon />
@@ -892,7 +861,6 @@ function Settings() {
                     />
                   </div>
 
-                  {/* Action Filter */}
                   <select
                     id="audit-action-filter"
                     className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -911,7 +879,7 @@ function Settings() {
                 </div>
 
                 <div className="audit-toolbar__right">
-                  {/* Refresh Button */}
+
                   <button
                     className="btn btn-secondary btn-sm"
                     id="audit-refresh-btn"
@@ -923,7 +891,6 @@ function Settings() {
                     <span>Refresh</span>
                   </button>
 
-                  {/* Export Button */}
                   <button
                     className="btn btn-secondary btn-sm"
                     id="audit-export-btn"
@@ -937,7 +904,6 @@ function Settings() {
                 </div>
               </div>
 
-              {/* Logs Error */}
               {logsError && (
                 <div className="mb-6 p-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-sm flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -950,7 +916,6 @@ function Settings() {
                 </div>
               )}
 
-              {/* Table or Empty State */}
               {logsLoading ? (
                 <div className="card p-12 text-center text-slate-500">
                   <div className="inline-block animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mb-3" />
@@ -995,7 +960,6 @@ function Settings() {
                       {logs.map((log) => {
                         const badgeClass = ACTION_BADGE_MAP[log.action] || 'audit-badge--default';
 
-                        // Summarize details
                         let detailsSummary = '—';
                         if (log.details) {
                           if (log.details.summary) {
@@ -1016,7 +980,6 @@ function Settings() {
                           }
                         }
 
-                        // Actor display
                         const actorDisplay = log.actor?.name || 'System / Unavailable';
                         const isSys = log.actor?.isSystem || actorDisplay.includes('System');
 
@@ -1079,7 +1042,6 @@ function Settings() {
         </div>
       )}
 
-      {/* ── Log Detail Modal ── */}
       {selectedLogDetail && (
         <div
           className="audit-detail-overlay"
@@ -1156,7 +1118,6 @@ function Settings() {
         </div>
       )}
 
-      {/* ── Modal for Other Unconfigured Sections ── */}
       {otherSectionModal && (
         <div
           className="audit-detail-overlay"

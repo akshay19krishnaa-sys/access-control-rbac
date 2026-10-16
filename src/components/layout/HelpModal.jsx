@@ -40,7 +40,7 @@ export default function HelpModal({ isOpen, onClose }) {
       aria-labelledby="help-modal-title"
     >
       <div className="help-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+
         <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-white">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#EEF5FF] text-[#176B87] flex items-center justify-center font-bold text-sm border border-[#B4D4FF]">
@@ -65,9 +65,8 @@ export default function HelpModal({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Content Body */}
         <div className="p-6 overflow-y-auto space-y-6 text-sm text-slate-700 bg-slate-50/50">
-          {/* Quick Nav Cards */}
+
           <div>
             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
               Quick Navigation
@@ -108,7 +107,6 @@ export default function HelpModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Key Security Safeguards */}
           <div className="p-4 bg-white rounded-xl border border-blue-100 shadow-xs space-y-3">
             <h3 className="font-bold text-sm text-[#176B87] flex items-center gap-2">
               <span>🛡️</span> Mandatory Security Rules
@@ -141,7 +139,6 @@ export default function HelpModal({ isOpen, onClose }) {
             </ul>
           </div>
 
-          {/* Module Capabilities */}
           <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2.5">
             <h3 className="font-bold text-sm text-slate-800 flex items-center gap-2">
               <span>📋</span> Granular Actions
@@ -172,7 +169,6 @@ export default function HelpModal({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between">
           <span className="text-xs text-slate-500">
             Access Control RBAC Platform v1.0

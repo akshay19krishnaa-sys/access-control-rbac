@@ -9,12 +9,6 @@ import {
   getPermissionCatalog,
 } from '../services/permissionService.js';
 
-/**
- * GET /api/permissions
- * Retrieves metadata for modules, actions, applicability rules,
- * the normalized permissions catalog, and the aggregated permissions map across all roles.
- * Authoritative source: `role_permissions` and `permissions` collections.
- */
 export const getPermissions = async (req, res, next) => {
   try {
     const [catalog, matrix] = await Promise.all([
@@ -36,10 +30,6 @@ export const getPermissions = async (req, res, next) => {
   }
 };
 
-/**
- * PUT /api/roles/:id/permissions
- * Updates granular permissions for a given role in the normalized `role_permissions` collection.
- */
 export const updateRolePermissions = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -70,7 +60,6 @@ export const updateRolePermissions = async (req, res, next) => {
       });
     }
 
-    // Priority 2: Protect System Administrator role permissions against unauthorized reduction or modification
     if (role.isSystem || role.name.toLowerCase() === 'system administrator') {
       return res.status(403).json({
         success: false,
@@ -81,7 +70,6 @@ export const updateRolePermissions = async (req, res, next) => {
       });
     }
 
-    // Priority 1: Minimum Permission Rule: reject if all permissions are false or empty
     if (!hasAtLeastOnePermission(permissions)) {
       return res.status(400).json({
         success: false,
@@ -92,7 +80,6 @@ export const updateRolePermissions = async (req, res, next) => {
       });
     }
 
-    // Update in normalized role_permissions (and sync to role document for backward compatibility)
     const updatedPermissions = await setRolePermissions(role._id, permissions);
 
     await recordAuditLog({

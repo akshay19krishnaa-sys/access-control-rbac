@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
 
-/**
- * RolePermission Schema — Normalized many-to-many role-permission mapping
- * Aligns with Section 26 of Task 1 - Access Control PDF.
- */
 const RolePermissionSchema = new mongoose.Schema(
   {
     roleId: {
@@ -56,7 +52,6 @@ const RolePermissionSchema = new mongoose.Schema(
   }
 );
 
-// Prevent duplicate assignment of the same permission to the same role
 RolePermissionSchema.index({ roleId: 1, permissionId: 1 }, { unique: true });
 RolePermissionSchema.index({ roleId: 1, module: 1, action: 1 }, { unique: true });
 

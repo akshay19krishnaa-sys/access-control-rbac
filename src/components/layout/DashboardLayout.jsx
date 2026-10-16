@@ -4,12 +4,6 @@ import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import UserProfileModal from './UserProfileModal';
 
-/**
- * DashboardLayout — Root shell that composes:
- * Sidebar (left) + [TopBar + page content] (right).
- *
- * Manages sidebar collapse, mobile open states, and shared user profile modal.
- */
 function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -23,7 +17,7 @@ function DashboardLayout() {
 
   return (
     <div className="dashboard-shell">
-      {/* ── Sidebar ── */}
+
       <Sidebar
         collapsed={collapsed}
         onToggle={toggleCollapsed}
@@ -32,21 +26,18 @@ function DashboardLayout() {
         onOpenUserProfile={openUserProfile}
       />
 
-      {/* ── Main content shell ── */}
       <div className="content-shell">
-        {/* Top navigation bar */}
+
         <TopBar
           onMenuToggle={openMobile}
           onOpenUserProfile={openUserProfile}
         />
 
-        {/* Routed page content */}
         <main className="content-main" id="main-content" role="main">
           <Outlet />
         </main>
       </div>
 
-      {/* Shared User Profile Modal */}
       <UserProfileModal
         isOpen={userProfileOpen}
         onClose={closeUserProfile}

@@ -1,8 +1,3 @@
-/**
- * RoleDetailPanel.jsx
- * Slide-over panel that renders the full read-only details of a role.
- * Shows an Edit button that delegates to the parent to open the form panel.
- */
 
 const CloseIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -18,7 +13,6 @@ const EditIcon = () => (
   </svg>
 );
 
-/* ── Helpers ── */
 const getInitials = (name) =>
   name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
@@ -31,11 +25,6 @@ const SCOPE_CONFIG = {
   'Selected Branches': { className: 'scope-badge selected-branches', label: 'Selected Branches' },
 };
 
-/**
- * @param {object}   role    — role object to display
- * @param {Function} onClose — close the panel
- * @param {Function} onEdit  — open edit form for this role (called with role)
- */
 function RoleDetailPanel({ role, onClose, onEdit }) {
   const scopeConf = SCOPE_CONFIG[role.branchScope] || { className: 'scope-badge', label: role.branchScope };
   const initials  = getInitials(role.name);
@@ -50,7 +39,7 @@ function RoleDetailPanel({ role, onClose, onEdit }) {
         aria-modal="true"
         aria-labelledby="detail-panel-title"
       >
-        {/* ── Header ── */}
+
         <div className="slide-panel__header">
           <div className="slide-panel__title-group">
             <span className="slide-panel__title" id="detail-panel-title">Role Details</span>
@@ -61,10 +50,8 @@ function RoleDetailPanel({ role, onClose, onEdit }) {
           </button>
         </div>
 
-        {/* ── Body ── */}
         <div className="slide-panel__body">
 
-          {/* Hero row */}
           <div className="detail-hero">
             <div className="detail-hero__icon" style={{ background: role.iconColor }} aria-hidden="true">
               {initials}
@@ -83,7 +70,6 @@ function RoleDetailPanel({ role, onClose, onEdit }) {
             </div>
           </div>
 
-          {/* ── Section: Basic Information ── */}
           <div className="detail-section">
             <div className="form-section-title">Basic Information</div>
 
@@ -110,7 +96,6 @@ function RoleDetailPanel({ role, onClose, onEdit }) {
             </div>
           </div>
 
-          {/* ── Section: Access Scope ── */}
           <div className="detail-section">
             <div className="form-section-title">Access Scope</div>
 
@@ -133,7 +118,6 @@ function RoleDetailPanel({ role, onClose, onEdit }) {
             )}
           </div>
 
-          {/* ── Section: Approval ── */}
           <div className="detail-section">
             <div className="form-section-title">Approval Configuration</div>
 
@@ -159,7 +143,6 @@ function RoleDetailPanel({ role, onClose, onEdit }) {
 
         </div>
 
-        {/* ── Footer ── */}
         <div className="slide-panel__footer">
           <button
             className="btn btn-secondary btn-sm"

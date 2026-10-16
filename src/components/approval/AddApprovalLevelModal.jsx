@@ -25,7 +25,7 @@ const PALETTE_COLORS = [
 ];
 
 function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
-  // Suggest the next sequential level number
+
   const nextLevelNumber = existingLevels.reduce(
     (max, l) => Math.max(max, Number(l.levelNumber || 0)),
     0
@@ -49,7 +49,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState(null);
 
-  // Handle ESC key press
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && !isSubmitting) {
@@ -164,7 +163,7 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
       aria-labelledby="modal-add-level-title"
     >
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+
         <div className="modal-header">
           <div>
             <h3 className="modal-title" id="modal-add-level-title">
@@ -185,7 +184,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
           </button>
         </div>
 
-        {/* Form Body */}
         <form className="modal-form" onSubmit={handleSubmit} noValidate>
           <div className="modal-body">
             {serverError && (
@@ -199,7 +197,7 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-              {/* Level Number */}
+
               <div className="form-field sm:col-span-1">
                 <label className="form-label" htmlFor="field-level-number">
                   Level # <span className="required">*</span>
@@ -222,7 +220,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
                 )}
               </div>
 
-              {/* Level Name */}
               <div className="form-field sm:col-span-2">
                 <label className="form-label" htmlFor="field-level-name">
                   Level Name <span className="required">*</span>
@@ -255,7 +252,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
               </div>
             </div>
 
-            {/* Approver Role / Title */}
             <div className="form-field mb-4">
               <label className="form-label" htmlFor="field-approver">
                 Approver Role / Title <span className="required">*</span>
@@ -279,7 +275,7 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              {/* Approval Limit */}
+
               <div className="form-field">
                 <label className="form-label" htmlFor="field-approval-limit">
                   Approval Limit ($) <span className="optional">(optional)</span>
@@ -302,7 +298,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
                 )}
               </div>
 
-              {/* Turnaround Time */}
               <div className="form-field">
                 <label className="form-label" htmlFor="field-turnaround">
                   Turnaround SLA <span className="optional">(optional)</span>
@@ -319,7 +314,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
               </div>
             </div>
 
-            {/* Threshold Label Override */}
             <div className="form-field mb-4">
               <label className="form-label" htmlFor="field-threshold">
                 Display Threshold <span className="optional">(optional override)</span>
@@ -339,7 +333,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
               />
             </div>
 
-            {/* Description */}
             <div className="form-field mb-4">
               <label className="form-label" htmlFor="field-description">
                 Description <span className="optional">(optional)</span>
@@ -367,7 +360,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
               )}
             </div>
 
-            {/* Badge Accent Color */}
             <div className="form-field">
               <label className="form-label">Badge Accent Color</label>
               <div className="flex items-center gap-2 flex-wrap mt-1">
@@ -391,7 +383,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
             </div>
           </div>
 
-          {/* Footer Actions */}
           <div className="modal-footer">
             <button
               type="button"
@@ -432,9 +423,6 @@ function AddApprovalLevelDialog({ onClose, onSave, existingLevels = [] }) {
   );
 }
 
-/**
- * AddApprovalLevelModal — Conditional wrapper that mounts/unmounts dialog with fresh state.
- */
 function AddApprovalLevelModal({ isOpen, onClose, onSave, existingLevels = [] }) {
   if (!isOpen) return null;
   return (

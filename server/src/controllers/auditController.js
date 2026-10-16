@@ -19,10 +19,6 @@ const DEFAULT_AUDIT_SETTINGS = {
   anonymizeActors: false,
 };
 
-/**
- * GET /api/settings/audit
- * Retrieves persistent audit settings from MongoDB.
- */
 export const getAuditSettings = async (req, res, next) => {
   try {
     let settings = await AuditSetting.findOne({ settingKey: 'default' });
@@ -40,10 +36,6 @@ export const getAuditSettings = async (req, res, next) => {
   }
 };
 
-/**
- * PUT /api/settings/audit
- * Updates persistent audit settings in MongoDB.
- */
 export const updateAuditSettings = async (req, res, next) => {
   try {
     const {
@@ -56,7 +48,6 @@ export const updateAuditSettings = async (req, res, next) => {
       anonymizeActors,
     } = req.body;
 
-    // Validation: retentionDays
     if (retentionDays !== undefined) {
       const days = Number(retentionDays);
       if (!Number.isInteger(days) || days < 1 || days > 3650) {
@@ -70,7 +61,6 @@ export const updateAuditSettings = async (req, res, next) => {
       }
     }
 
-    // Validation: logLevel
     if (logLevel !== undefined) {
       const allowedLevels = ['ALL', 'INFO', 'WARNING', 'CRITICAL'];
       if (!allowedLevels.includes(logLevel)) {
@@ -84,7 +74,6 @@ export const updateAuditSettings = async (req, res, next) => {
       }
     }
 
-    // Validation: exportFormat
     if (exportFormat !== undefined) {
       const allowedFormats = ['CSV', 'JSON'];
       if (!allowedFormats.includes(exportFormat)) {
@@ -98,7 +87,6 @@ export const updateAuditSettings = async (req, res, next) => {
       }
     }
 
-    // Validation: complianceReportSchedule
     if (complianceReportSchedule !== undefined) {
       const allowedSchedules = ['NONE', 'DAILY', 'WEEKLY', 'MONTHLY'];
       if (!allowedSchedules.includes(complianceReportSchedule)) {
@@ -112,7 +100,6 @@ export const updateAuditSettings = async (req, res, next) => {
       }
     }
 
-    // Find or create
     let settings = await AuditSetting.findOne({ settingKey: 'default' });
     if (!settings) {
       settings = new AuditSetting({ settingKey: 'default' });
@@ -149,17 +136,12 @@ export const updateAuditSettings = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/audit-logs
- * Retrieves audit logs from MongoDB with search, action filters, date range, and pagination.
- */
 export const getAuditLogs = async (req, res, next) => {
   try {
     const { q, action, startDate, endDate, limit = 50, page = 1 } = req.query;
 
     const query = {};
 
-    // Search filter across entityName, actionDisplay, actor.name
     if (q && q.trim()) {
       const term = q.trim();
       query.$or = [
@@ -170,12 +152,10 @@ export const getAuditLogs = async (req, res, next) => {
       ];
     }
 
-    // Action filter
     if (action && action !== 'ALL') {
       query.action = action;
     }
 
-    // Date range filter
     if (startDate || endDate) {
       query.createdAt = {};
       if (startDate) {
@@ -215,10 +195,6 @@ export const getAuditLogs = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/audit-logs/export
- * Exports filtered audit logs in CSV or JSON format.
- */
 export const exportAuditLogs = async (req, res, next) => {
   try {
     const { format = 'csv', action, q } = req.query;
@@ -245,7 +221,6 @@ export const exportAuditLogs = async (req, res, next) => {
       return res.status(200).send(JSON.stringify(logs, null, 2));
     }
 
-    // Default: CSV export
     const headers = ['Timestamp', 'Action', 'Entity Type', 'Entity Name', 'Actor Name', 'Actor Role', 'Status', 'Details'];
     const rows = logs.map((log) => [
       `"${new Date(log.createdAt).toISOString()}"`,

@@ -1,23 +1,12 @@
-/**
- * roles.js — Mock data and constants for Phase 2 Role Management.
- *
- * To integrate the backend (Phase 3+), replace MOCK_ROLES with an
- * async API call such as:  const roles = await fetch('/api/roles').then(r => r.json())
- *
- * Each role object mirrors the planned Mongoose schema shape.
- */
 
-// ─── Branch Scope Options ────────────────────────────────────────────────────
 export const BRANCH_SCOPES = [
   { value: 'Assigned Branch',   label: 'Assigned Branch'   },
   { value: 'Selected Branches', label: 'Selected Branches' },
   { value: 'All Branches',      label: 'All Branches'      },
 ];
 
-// ─── Approval Levels (0 = no authority) ─────────────────────────────────────
 export const APPROVAL_LEVELS = [0, 1, 2, 3, 4];
 
-// ─── Branches selectable when scope = "Selected Branches" ────────────────────
 export const AVAILABLE_BRANCHES = [
   'Main Branch',
   'North Branch',
@@ -28,25 +17,6 @@ export const AVAILABLE_BRANCHES = [
   'Airport Branch',
 ];
 
-/**
- * MOCK_ROLES — initial role dataset.
- *
- * Schema:
- * {
- *   id:               string   — client-side unique identifier
- *   name:             string   — display name (max 100 chars)
- *   description:      string   — purpose / responsibilities (max 500 chars)
- *   usersAssigned:    number   — count of active users with this role
- *   branchScope:      string   — 'Assigned Branch' | 'Selected Branches' | 'All Branches'
- *   selectedBranches: string[] — chosen branches (only for 'Selected Branches' scope)
- *   approvalLevel:    number   — 0–4; 0 = no approval authority
- *   approvalLimit:    number|null — monetary threshold or null for unlimited
- *   status:           string   — 'active' | 'inactive'
- *   createdDate:      string   — 'YYYY-MM-DD'
- *   isSystem:         boolean  — system roles are protected (cannot be edited/deleted)
- *   iconColor:        string   — CSS colour for the initials avatar in the table
- * }
- */
 export const MOCK_ROLES = [
   {
     id: 'role-001',

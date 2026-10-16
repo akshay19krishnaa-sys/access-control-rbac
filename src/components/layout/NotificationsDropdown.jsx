@@ -35,12 +35,11 @@ export default function NotificationsDropdown({
   const popoverRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close when clicking outside or pressing Escape
   useEffect(() => {
     if (!isOpen) return;
 
     const handleClickOutside = (e) => {
-      // If clicked inside popover or on the notifications trigger button, don't close via this handler
+
       if (
         popoverRef.current &&
         !popoverRef.current.contains(e.target) &&
@@ -75,7 +74,7 @@ export default function NotificationsDropdown({
       aria-label="Notifications Panel"
       id="notifications-popover"
     >
-      {/* Header */}
+
       <div className="notifications-popover__header">
         <div className="notifications-popover__title">
           <span>Notifications</span>
@@ -111,7 +110,6 @@ export default function NotificationsDropdown({
         </div>
       </div>
 
-      {/* List */}
       <div className="notifications-popover__list">
         {loading && notifications.length === 0 && (
           <div className="p-8 text-center text-xs text-slate-500">
@@ -176,7 +174,6 @@ export default function NotificationsDropdown({
         })}
       </div>
 
-      {/* Footer */}
       <div className="notifications-popover__footer">
         <span className="text-[11px] text-slate-500">
           Persistent audit logs in MongoDB

@@ -1,17 +1,6 @@
-/**
- * api.js — Central API service communicating with the Express + MongoDB backend.
- *
- * Source of truth: MongoDB via REST APIs.
- * LocalStorage is reserved solely for non-authoritative client preferences
- * (e.g., active role selection preference, UI view preferences).
- */
 
-// const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 const API_BASE = 'https://access-control-rbac-sepia.vercel.app/api';
 
-/**
- * Helper to handle fetch responses and extract standard backend error payloads
- */
 async function handleResponse(response) {
   const contentType = response.headers.get('content-type');
   const isJson = contentType && contentType.includes('application/json');
@@ -28,8 +17,6 @@ async function handleResponse(response) {
 
   return payload;
 }
-
-// ─── Roles API ───────────────────────────────────────────────────────────────
 
 export async function getRolesApi(filters = {}) {
   const params = new URLSearchParams();
@@ -90,8 +77,6 @@ export async function cloneRoleApi(id) {
   return result.data;
 }
 
-// ─── Permissions API ─────────────────────────────────────────────────────────
-
 export async function getPermissionsApi() {
   const result = await handleResponse(await fetch(`${API_BASE}/permissions`));
   return result.data;
@@ -108,8 +93,6 @@ export async function updateRolePermissionsApi(roleId, permissions) {
   return result.data;
 }
 
-// ─── Approval Levels API ───────────────────────────────────────────────────
-
 export async function getApprovalLevelsApi() {
   const result = await handleResponse(await fetch(`${API_BASE}/approval-levels`));
   return result.data;
@@ -125,8 +108,6 @@ export async function createApprovalLevelApi(levelData) {
   );
   return result.data;
 }
-
-// ─── Audit & Logging API ───────────────────────────────────────────────────
 
 export async function getAuditSettingsApi() {
   const result = await handleResponse(await fetch(`${API_BASE}/settings/audit`));
@@ -180,8 +161,6 @@ export async function exportAuditLogsApi(format = 'csv', filters = {}) {
   document.body.removeChild(a);
   window.URL.revokeObjectURL(downloadUrl);
 }
-
-// ─── Reports API (Priority 5) ────────────────────────────────────────────────
 
 export async function getRoleSummaryReportApi(filters = {}) {
   const params = new URLSearchParams();
@@ -254,8 +233,6 @@ export async function exportReportCsvApi(type, filters = {}) {
   return true;
 }
 
-// ─── Client Preferences Only (Non-Authoritative) ──────────────────────────────
-
 export function getClientPreference(key, defaultValue) {
   try {
     const val = localStorage.getItem(`rbac_pref_${key}`);
@@ -269,6 +246,6 @@ export function setClientPreference(key, value) {
   try {
     localStorage.setItem(`rbac_pref_${key}`, JSON.stringify(value));
   } catch {
-    // Graceful ignore
+
   }
 }

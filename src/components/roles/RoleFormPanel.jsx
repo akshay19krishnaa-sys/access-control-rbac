@@ -1,19 +1,8 @@
-/**
- * RoleFormPanel.jsx
- * Slide-over panel for Create, Edit, and Clone role operations.
- *
- * Handles:
- * - Initialisation from existing role data (edit / clone)
- * - Real-time field validation after first submit attempt
- * - Character counters for name (100) and description (500)
- * - Conditional branch checkbox selection
- * - Status toggle (active / inactive)
- */
+
 import { useState, useEffect } from 'react';
 import { BRANCH_SCOPES, APPROVAL_LEVELS, AVAILABLE_BRANCHES } from '../../data/roles';
 import { MODULES } from '../../data/permissions';
 
-/* ── Icons ── */
 const CloseIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -35,7 +24,6 @@ const SaveIcon = () => (
   </svg>
 );
 
-/* ── Initial blank form values ── */
 const EMPTY_FORM = {
   name: '',
   description: '',
@@ -59,7 +47,6 @@ function hasAtLeastOnePerm(permissions) {
   });
 }
 
-/* ── Validation ── */
 function validate(form, existingNames, mode, originalName) {
   const errors = {};
   const trimmedName = form.name.trim();
@@ -71,7 +58,7 @@ function validate(form, existingNames, mode, originalName) {
   } else {
     const lower = trimmedName.toLowerCase();
     const isDuplicate = existingNames.some((n) => {
-      // In edit mode, skip the role's own current name
+
       if (mode === 'edit' && originalName && n.toLowerCase() === originalName.toLowerCase()) return false;
       return n.toLowerCase() === lower;
     });
@@ -93,7 +80,6 @@ function validate(form, existingNames, mode, originalName) {
     }
   }
 
-  // Priority 1: Minimum Permission Rule
   if (!hasAtLeastOnePerm(form.permissions)) {
     errors.permissions = 'Every role must have at least one permission assigned.';
   }
@@ -101,20 +87,12 @@ function validate(form, existingNames, mode, originalName) {
   return errors;
 }
 
-/* ── Panel title / subtitle maps ── */
 const PANEL_META = {
   create: { title: 'Create Role',  subtitle: 'Define a new role and configure its access scope' },
   edit:   { title: 'Edit Role',    subtitle: 'Update role configuration and permissions' },
   clone:  { title: 'Clone Role',   subtitle: 'Create a copy of an existing role' },
 };
 
-/**
- * @param {'create'|'edit'|'clone'} mode
- * @param {object|null}  roleData       — existing role (edit / clone) or null (create)
- * @param {string[]}     existingNames  — all current role names for uniqueness check
- * @param {Function}     onSave         — called with clean form data on successful submit
- * @param {Function}     onClose        — called to close the panel
- */
 function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
   const [form, setForm]         = useState(EMPTY_FORM);
   const [errors, setErrors]     = useState({});
@@ -122,37 +100,37 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
 
   const meta = PANEL_META[mode] || PANEL_META.create;
 
-  /* Initialise form when mode or source role changes */
   useEffect(() => {
-    if (roleData && (mode === 'edit' || mode === 'clone')) {
-      setForm({
-        name:             mode === 'clone' ? `Copy of ${roleData.name}` : roleData.name,
-        description:      roleData.description || '',
-        branchScope:      roleData.branchScope,
-        selectedBranches: [...(roleData.selectedBranches || [])],
-        approvalLevel:    roleData.approvalLevel ?? 0,
-        approvalLimit:    roleData.approvalLimit !== null && roleData.approvalLimit !== undefined
-                            ? String(roleData.approvalLimit) : '',
-        status:           mode === 'clone' ? 'active' : roleData.status,
-        permissions:      roleData.permissions && typeof roleData.permissions === 'object'
-                            ? JSON.parse(JSON.stringify(roleData.permissions))
-                            : { dashboard: { view: true } },
-      });
-    } else {
-      setForm(EMPTY_FORM);
-    }
-    setErrors({});
-    setSubmitted(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, roleData?.id]);
+    queueMicrotask(() => {
+      if (roleData && (mode === 'edit' || mode === 'clone')) {
+        setForm({
+          name:             mode === 'clone' ? `Copy of ${roleData.name}` : roleData.name,
+          description:      roleData.description || '',
+          branchScope:      roleData.branchScope,
+          selectedBranches: [...(roleData.selectedBranches || [])],
+          approvalLevel:    roleData.approvalLevel ?? 0,
+          approvalLimit:    roleData.approvalLimit !== null && roleData.approvalLimit !== undefined
+                              ? String(roleData.approvalLimit) : '',
+          status:           mode === 'clone' ? 'active' : roleData.status,
+          permissions:      roleData.permissions && typeof roleData.permissions === 'object'
+                              ? JSON.parse(JSON.stringify(roleData.permissions))
+                              : { dashboard: { view: true } },
+        });
+      } else {
+        setForm(EMPTY_FORM);
+      }
+      setErrors({});
+      setSubmitted(false);
+    });
+  }, [mode, roleData]);
 
-  /* Re-validate on every change after first submit */
   useEffect(() => {
     if (!submitted) return;
-    setErrors(validate(form, existingNames, mode, roleData?.name));
+    queueMicrotask(() => {
+      setErrors(validate(form, existingNames, mode, roleData?.name));
+    });
   }, [form, submitted, existingNames, mode, roleData?.name]);
 
-  /* Field helpers */
   const set = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const toggleBranch = (branch) =>
@@ -163,7 +141,6 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
         : [...prev.selectedBranches, branch],
     }));
 
-  /* Submit handler */
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
@@ -194,7 +171,7 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
         aria-modal="true"
         aria-labelledby="form-panel-title"
       >
-        {/* ── Header ── */}
+
         <div className="slide-panel__header">
           <div className="slide-panel__title-group">
             <span className="slide-panel__title" id="form-panel-title">{meta.title}</span>
@@ -210,7 +187,6 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
           </button>
         </div>
 
-        {/* ── Form (wraps body + footer to own the submit) ── */}
         <form
           id="role-form"
           className="slide-panel__form"
@@ -219,11 +195,9 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
         >
           <div className="slide-panel__body">
 
-            {/* ── Section 1: Basic Information ── */}
             <div className="form-section">
               <div className="form-section-title">Basic Information</div>
 
-              {/* Role Name */}
               <div className="form-field">
                 <label className="form-label" htmlFor="field-name">
                   Role Name <span className="required">*</span>
@@ -247,7 +221,6 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
                 )}
               </div>
 
-              {/* Description */}
               <div className="form-field">
                 <label className="form-label" htmlFor="field-desc">
                   Description <span className="optional">(optional)</span>
@@ -268,7 +241,6 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
                 )}
               </div>
 
-              {/* Status */}
               <div className="form-field">
                 <label className="form-label">Status</label>
                 <div className="status-toggle" role="radiogroup" aria-label="Role status">
@@ -304,11 +276,9 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
               </div>
             </div>
 
-            {/* ── Section 2: Access Scope ── */}
             <div className="form-section">
               <div className="form-section-title">Access Scope</div>
 
-              {/* Branch Scope */}
               <div className="form-field">
                 <label className="form-label" htmlFor="field-scope">
                   Branch Scope <span className="required">*</span>
@@ -339,7 +309,6 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
                 </div>
               </div>
 
-              {/* Conditional: branch checkboxes */}
               {form.branchScope === 'Selected Branches' && (
                 <div className="form-field">
                   <label className="form-label">
@@ -364,11 +333,9 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
               )}
             </div>
 
-            {/* ── Section 3: Approval Configuration ── */}
             <div className="form-section">
               <div className="form-section-title">Approval Configuration</div>
 
-              {/* Approval Level */}
               <div className="form-field">
                 <label className="form-label" htmlFor="field-approval-level">
                   Approval Level
@@ -388,7 +355,6 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
                 <div className="form-hint">Higher levels represent greater approval authority.</div>
               </div>
 
-              {/* Approval Limit */}
               <div className="form-field">
                 <label className="form-label" htmlFor="field-approval-limit">
                   Approval Limit <span className="optional">(optional)</span>
@@ -413,7 +379,6 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
               </div>
             </div>
 
-            {/* ── Section 4: Initial Module Permissions ── */}
             <div className="form-section">
               <div className="form-section-title">
                 Initial Module Permissions <span className="required">*</span>
@@ -476,9 +441,8 @@ function RoleFormPanel({ mode, roleData, existingNames, onSave, onClose }) {
               </div>
             </div>
 
-          </div>{/* end slide-panel__body */}
+          </div>
 
-          {/* ── Footer ── */}
           <div className="slide-panel__footer">
             <button
               className="btn btn-secondary btn-sm"

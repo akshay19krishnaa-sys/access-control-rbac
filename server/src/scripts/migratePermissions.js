@@ -1,13 +1,3 @@
-/**
- * migratePermissions.js — Migration script for Option A Database Normalization
- *
- * Implements:
- * 1. Seed catalog of 41 applicable permissions into `permissions` collection.
- * 2. Migrate existing 43 roles' permissions into `role_permissions` collection.
- * 3. Verify effective permissions before vs after migration for all roles.
- * 4. Idempotent execution (can be run repeatedly safely).
- * 5. Rollback support via --rollback flag.
- */
 
 import mongoose from 'mongoose';
 import fs from 'fs';
@@ -60,7 +50,6 @@ async function migrate() {
   await mongoose.connect(MONGODB_URI);
   console.log('Connected to DB:', mongoose.connection.name);
 
-  // 1. Snapshot pre-migration state
   console.log('\n[Phase 1] Taking pre-migration snapshot of roles & permissions...');
   const existingRoles = await Role.find({}).lean();
   console.log(`Found ${existingRoles.length} roles in database.`);
@@ -75,7 +64,6 @@ async function migrate() {
     });
   }
 
-  // 2. Seed permissions catalog
   console.log('\n[Phase 2] Seeding permissions catalog (41 applicable module/action pairs)...');
   const catalog = await seedPermissionCatalog();
   const catalogCount = await Permission.countDocuments();
@@ -89,7 +77,6 @@ async function migrate() {
     catalogMap.set(`${p.module}:${p.action}`, p._id);
   }
 
-  // 3. Migrate each role's permissions into role_permissions
   console.log('\n[Phase 3] Migrating role permissions into "role_permissions" collection...');
   let totalAssignmentsCreated = 0;
 
@@ -105,7 +92,7 @@ async function migrate() {
       const modPerms = existingPerms[mod.id] || {};
 
       for (const act of applicable) {
-        // System Admin has all applicable permissions; custom roles check explicit true
+
         const isGranted = isSysAdmin ? true : Boolean(modPerms[act]);
         if (isGranted) {
           const permId = catalogMap.get(`${mod.id}:${act}`);
@@ -122,7 +109,6 @@ async function migrate() {
       }
     }
 
-    // Idempotent upsert: remove existing role_permissions for this role and insert fresh
     await RolePermission.deleteMany({ roleId: rId });
     if (roleAssignments.length > 0) {
       await RolePermission.insertMany(roleAssignments);
@@ -133,7 +119,6 @@ async function migrate() {
   const rolePermCount = await RolePermission.countDocuments();
   console.log(`✓ Created ${totalAssignmentsCreated} assignments. Total in "role_permissions": ${rolePermCount}.`);
 
-  // 4. Verification: Compare effective permissions before vs after
   console.log('\n[Phase 4] Verifying effective permissions for all roles...');
   let verifiedRoles = 0;
   let mismatchedRoles = 0;
@@ -145,7 +130,6 @@ async function migrate() {
 
     const isSysAdmin = Boolean(role.isSystem || role.name?.toLowerCase() === 'system administrator');
 
-    // Compare each applicable module & action
     for (const mod of MODULES_METADATA) {
       const applicable = mod.applicable || [];
       const preMod = pre.permissions[mod.id] || {};

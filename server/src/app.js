@@ -13,7 +13,6 @@ import { connectDB } from './config/db.js';
 
 const app = express();
 
-// ─── CORS Configuration ──────────────────────────────────────────────────────
 const defaultAllowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
@@ -30,7 +29,7 @@ const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envAllow
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+
       if (
         !origin ||
         allowedOrigins.includes(origin) ||
@@ -47,11 +46,9 @@ app.use(
   })
 );
 
-// ─── Middleware ──────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(accessLogger);
 
-// Ensure MongoDB is connected before handling any route (essential for Vercel Serverless)
 app.use(async (req, res, next) => {
   try {
     await connectDB();
@@ -61,7 +58,6 @@ app.use(async (req, res, next) => {
   }
 });
 
-// ─── Healthcheck & API Info ──────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
@@ -90,7 +86,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ─── API Routes ──────────────────────────────────────────────────────────────
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/approval-levels', approvalLevelRoutes);
@@ -99,7 +94,6 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/business', businessRoutes);
 app.use('/api/reports', reportRoutes);
 
-// ─── Error Handling ──────────────────────────────────────────────────────────
 app.use(notFoundHandler);
 app.use(globalErrorHandler);
 

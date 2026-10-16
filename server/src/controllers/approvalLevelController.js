@@ -2,16 +2,10 @@ import { ApprovalLevel } from '../models/ApprovalLevel.js';
 import { INITIAL_SEED_APPROVAL_LEVELS } from '../data/seedData.js';
 import { recordAuditLog } from '../utils/auditLogger.js';
 
-/**
- * GET /api/approval-levels
- * Retrieves all configured approval levels sorted by level number.
- * Automatically seeds the default levels if none exist.
- */
 export const getApprovalLevels = async (req, res, next) => {
   try {
     let levels = await ApprovalLevel.find().sort({ levelNumber: 1, createdAt: 1 });
 
-    // Auto-seed if collection is currently empty
     if (levels.length === 0) {
       console.log('[ApprovalLevel] Collection empty. Seeding initial approval levels...');
       await ApprovalLevel.insertMany(INITIAL_SEED_APPROVAL_LEVELS);
@@ -30,10 +24,6 @@ export const getApprovalLevels = async (req, res, next) => {
   }
 };
 
-/**
- * POST /api/approval-levels
- * Creates a new approval level and persists it in MongoDB.
- */
 export const createApprovalLevel = async (req, res, next) => {
   try {
     const {
@@ -47,7 +37,6 @@ export const createApprovalLevel = async (req, res, next) => {
       color,
     } = req.body;
 
-    // Required validation: Name
     if (!name || !name.trim()) {
       return res.status(400).json({
         success: false,
@@ -68,7 +57,6 @@ export const createApprovalLevel = async (req, res, next) => {
       });
     }
 
-    // Required validation: Approver
     if (!approver || !approver.trim()) {
       return res.status(400).json({
         success: false,
@@ -89,15 +77,13 @@ export const createApprovalLevel = async (req, res, next) => {
       });
     }
 
-    // Determine level number
     let finalLevelNumber = Number(levelNumber);
     if (!Number.isInteger(finalLevelNumber) || finalLevelNumber <= 0) {
-      // Auto-calculate next highest level number
+
       const highestLevel = await ApprovalLevel.findOne().sort({ levelNumber: -1 });
       finalLevelNumber = (highestLevel?.levelNumber || 0) + 1;
     }
 
-    // Check duplicate levelNumber
     const existingNumber = await ApprovalLevel.findOne({ levelNumber: finalLevelNumber });
     if (existingNumber) {
       return res.status(409).json({
@@ -109,7 +95,6 @@ export const createApprovalLevel = async (req, res, next) => {
       });
     }
 
-    // Check duplicate name (case-insensitive)
     const existingName = await ApprovalLevel.findOne({
       name: { $regex: `^${name.trim()}$`, $options: 'i' },
     });
@@ -123,7 +108,6 @@ export const createApprovalLevel = async (req, res, next) => {
       });
     }
 
-    // Calculate formatted threshold if not explicitly entered
     let finalThreshold = threshold && threshold.trim() ? threshold.trim() : '';
     let parsedLimit = null;
 

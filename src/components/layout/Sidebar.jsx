@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import NavItem from '../ui/NavItem';
 import { getRolesApi } from '../../services/api';
 
-/* ── SVG Icon Components (inline for zero-dependency icons) ── */
 const Icons = {
   Brand: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -64,15 +63,6 @@ const SETTINGS_ITEMS = [
   { to: '/settings', icon: <Icons.Settings />, label: 'Settings' },
 ];
 
-/**
- * Sidebar — Dark navy navigation sidebar.
- *
- * @param {boolean}  collapsed          - Whether sidebar is in narrow/collapsed mode
- * @param {Function} onToggle           - Toggle collapsed state
- * @param {boolean}  mobileOpen         - Whether sidebar is open on mobile
- * @param {Function} onMobileClose      - Close sidebar on mobile
- * @param {Function} onOpenUserProfile  - Open user profile dialog
- */
 function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose, onOpenUserProfile }) {
   const [roleCount, setRoleCount] = useState(null);
 
@@ -107,7 +97,7 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose, onOpenUserPro
 
   return (
     <>
-      {/* Mobile overlay */}
+
       <div
         className={`sidebar-overlay ${mobileOpen ? 'visible' : ''}`}
         onClick={onMobileClose}
@@ -115,7 +105,7 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose, onOpenUserPro
       />
 
       <aside className={sidebarClass} aria-label="Main navigation">
-        {/* Brand / Logo */}
+
         <div className="sidebar-brand">
           <div className="sidebar-brand__icon" aria-hidden="true">
             <Icons.Brand />
@@ -126,7 +116,6 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose, onOpenUserPro
           </div>
         </div>
 
-        {/* Main Navigation */}
         <nav className="sidebar-nav" aria-label="Primary navigation">
           <span className="sidebar-nav__section-label">Main Menu</span>
 
@@ -140,7 +129,6 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose, onOpenUserPro
             />
           ))}
 
-          {/* Divider */}
           <div className="mt-4">
             <span className="sidebar-nav__section-label">Configuration</span>
             {SETTINGS_ITEMS.map((item) => (
@@ -154,7 +142,6 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose, onOpenUserPro
           </div>
         </nav>
 
-        {/* Sidebar Footer — User Profile */}
         <div className="sidebar-footer">
           <div
             className="sidebar-user"
@@ -178,7 +165,6 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose, onOpenUserPro
           </div>
         </div>
 
-        {/* Collapse Toggle Button */}
         <button
           className="sidebar-collapse-btn"
           onClick={onToggle}

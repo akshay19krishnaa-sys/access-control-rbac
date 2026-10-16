@@ -1,15 +1,3 @@
-/**
- * Reports.jsx — Priority 5 Reports and CSV Export Console
- *
- * Implements the 4 required compliance reports per Task 1 Access Control Specification (Section 20):
- * A. Role Summary Report
- * B. Permission Matrix Report
- * C. Role Assignment Report (Aggregated with Scope Transparency)
- * D. Inactive Roles Report
- *
- * Source of truth: MongoDB via REST APIs.
- * Supports active client filtering and direct CSV export with backend audit logging.
- */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
@@ -22,7 +10,6 @@ import {
 import { BRANCH_SCOPES } from '../data/roles';
 import { MODULES } from '../data/permissions';
 
-/* ── UI Icons ── */
 const DownloadIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -58,25 +45,23 @@ const DashIcon = () => (
 );
 
 export default function Reports() {
-  const [activeTab, setActiveTab] = useState('summary'); // 'summary' | 'matrix' | 'assignment' | 'inactive'
+  const [activeTab, setActiveTab] = useState('summary');
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [toast, setToast] = useState(null);
 
-  // ── Report Datasets ──
   const [summaryData, setSummaryData] = useState([]);
   const [matrixData, setMatrixData] = useState([]);
   const [assignmentData, setAssignmentData] = useState([]);
   const [assignmentNotice, setAssignmentNotice] = useState('');
   const [inactiveData, setInactiveData] = useState([]);
 
-  // ── Filters State ──
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [scopeFilter, setScopeFilter] = useState('ALL');
   const [selectedRoleFilter, setSelectedRoleFilter] = useState('ALL');
   const [selectedModuleFilter, setSelectedModuleFilter] = useState('ALL');
-  const [assignmentFilter, setAssignmentFilter] = useState('ALL'); // 'ALL' | 'ASSIGNED' | 'UNASSIGNED'
+  const [assignmentFilter, setAssignmentFilter] = useState('ALL');
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -90,7 +75,6 @@ export default function Reports() {
     setRefreshTrigger((prev) => prev + 1);
   }, []);
 
-  // ── Data Fetcher Effect ──
   useEffect(() => {
     let ignore = false;
     const load = async () => {
@@ -140,7 +124,6 @@ export default function Reports() {
     };
   }, [activeTab, searchQuery, statusFilter, scopeFilter, selectedRoleFilter, selectedModuleFilter, refreshTrigger, showToast]);
 
-  // ── Client-side Filtered Views for Display ──
   const filteredAssignmentData = useMemo(() => {
     return assignmentData.filter((r) => {
       if (assignmentFilter === 'ASSIGNED') return (r.usersAssigned || 0) > 0;
@@ -149,7 +132,6 @@ export default function Reports() {
     });
   }, [assignmentData, assignmentFilter]);
 
-  // Available unique roles in matrix
   const matrixRoleOptions = useMemo(() => {
     const map = new Map();
     matrixData.forEach((row) => {
@@ -160,7 +142,6 @@ export default function Reports() {
     return Array.from(map.entries());
   }, [matrixData]);
 
-  // ── CSV Export Handler ──
   const handleExport = async () => {
     setExporting(true);
     try {
@@ -191,7 +172,7 @@ export default function Reports() {
 
   return (
     <div className="reports-page">
-      {/* ── Page Header ── */}
+
       <div className="page-header">
         <div className="page-header__left">
           <h2 className="page-header__title" id="reports-heading">Reports & Exports</h2>
@@ -223,7 +204,6 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* ── Report Tabs ── */}
       <div className="settings-tabs" role="tablist" aria-label="Compliance Reports" style={{ marginBottom: '20px' }}>
         <button
           className={`settings-tab-btn ${activeTab === 'summary' ? 'active' : ''}`}
@@ -263,7 +243,6 @@ export default function Reports() {
         </button>
       </div>
 
-      {/* ── Notification Banner (Toast) ── */}
       {toast && (
         <div
           role="status"
@@ -286,9 +265,8 @@ export default function Reports() {
         </div>
       )}
 
-      {/* ── Report Filter Toolbar ── */}
       <div className="roles-toolbar" role="region" aria-label="Report filters" style={{ marginBottom: '18px' }}>
-        {/* Search Input (Summary, Assignment, Inactive) */}
+
         {activeTab !== 'matrix' && (
           <div className="roles-search">
             <span className="roles-search__icon" aria-hidden="true">
@@ -306,7 +284,6 @@ export default function Reports() {
           </div>
         )}
 
-        {/* Matrix Specific Filters */}
         {activeTab === 'matrix' && (
           <>
             <select
@@ -337,7 +314,6 @@ export default function Reports() {
           </>
         )}
 
-        {/* Status Filter (Summary & Matrix) */}
         {(activeTab === 'summary' || activeTab === 'matrix') && (
           <select
             className="roles-filter-select"
@@ -352,7 +328,6 @@ export default function Reports() {
           </select>
         )}
 
-        {/* Branch Scope Filter (Summary & Inactive) */}
         {(activeTab === 'summary' || activeTab === 'inactive') && (
           <select
             className="roles-filter-select"
@@ -368,7 +343,6 @@ export default function Reports() {
           </select>
         )}
 
-        {/* Assignment Volume Filter */}
         {activeTab === 'assignment' && (
           <select
             className="roles-filter-select"
@@ -383,7 +357,6 @@ export default function Reports() {
           </select>
         )}
 
-        {/* Reset Filters */}
         <button
           className="btn btn-secondary btn-sm"
           onClick={handleClearFilters}
@@ -394,9 +367,6 @@ export default function Reports() {
         </button>
       </div>
 
-      {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* REPORT A: ROLE SUMMARY                                                     */}
-      {/* ────────────────────────────────────────────────────────────────────────── */}
       {activeTab === 'summary' && (
         <div className="roles-table-wrap">
           <div className="roles-table-scroll">
@@ -473,9 +443,6 @@ export default function Reports() {
         </div>
       )}
 
-      {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* REPORT B: PERMISSION MATRIX REPORT                                         */}
-      {/* ────────────────────────────────────────────────────────────────────────── */}
       {activeTab === 'matrix' && (
         <div className="roles-table-wrap">
           <div className="roles-table-scroll">
@@ -551,12 +518,9 @@ export default function Reports() {
         </div>
       )}
 
-      {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* REPORT C: ROLE ASSIGNMENT REPORT                                           */}
-      {/* ────────────────────────────────────────────────────────────────────────── */}
       {activeTab === 'assignment' && (
         <div>
-          {/* Honest Scope & Architecture Notice */}
+
           <div
             role="note"
             style={{
@@ -655,12 +619,9 @@ export default function Reports() {
         </div>
       )}
 
-      {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* REPORT D: INACTIVE ROLES REPORT                                            */}
-      {/* ────────────────────────────────────────────────────────────────────────── */}
       {activeTab === 'inactive' && (
         <div>
-          {/* Decommissioning Notice */}
+
           <div
             role="note"
             style={{

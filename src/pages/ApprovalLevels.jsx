@@ -1,7 +1,4 @@
-/**
- * ApprovalLevels — Multi-tier Approval Workflow configuration.
- * Connected to MongoDB via Express REST API (/api/approval-levels).
- */
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getApprovalLevelsApi, createApprovalLevelApi } from '../services/api';
 import AddApprovalLevelModal from '../components/approval/AddApprovalLevelModal';
@@ -40,7 +37,6 @@ function ApprovalLevels() {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Toast feedback state
   const [toast, setToast] = useState(null);
   const toastTimeoutRef = useRef(null);
 
@@ -58,7 +54,6 @@ function ApprovalLevels() {
     };
   }, []);
 
-  // Fetch levels from backend API
   const fetchLevels = useCallback(() => {
     setLoading(true);
     setError(null);
@@ -98,7 +93,6 @@ function ApprovalLevels() {
     };
   }, [showToast]);
 
-  // Handle saving new approval level
   const handleSaveLevel = async (newLevelData) => {
     const created = await createApprovalLevelApi(newLevelData);
     setLevels((prev) => {
@@ -112,7 +106,7 @@ function ApprovalLevels() {
 
   return (
     <div className="approval-levels-page">
-      {/* Page Header */}
+
       <div className="page-header">
         <div className="page-header__left">
           <h2 className="page-header__title">Approval Levels</h2>
@@ -144,7 +138,6 @@ function ApprovalLevels() {
         </div>
       </div>
 
-      {/* Loading State */}
       {loading && (
         <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-[#B4D4FF] mb-8">
           <svg className="animate-spin h-8 w-8 text-[#176B87] mb-3" fill="none" viewBox="0 0 24 24">
@@ -155,7 +148,6 @@ function ApprovalLevels() {
         </div>
       )}
 
-      {/* Error Banner with Retry */}
       {!loading && error && (
         <div className="p-4 mb-6 rounded-xl bg-red-50 border border-red-200 text-red-700 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -171,7 +163,6 @@ function ApprovalLevels() {
         </div>
       )}
 
-      {/* Approval Levels Grid */}
       {!loading && !error && (
         <div className="approval-levels-grid">
           {levels.map((level) => {
@@ -189,7 +180,7 @@ function ApprovalLevels() {
               >
                 <div className="card-header">
                   <div className="flex items-center gap-3">
-                    {/* Level badge */}
+
                     <div
                       className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
                       style={{ background: level.color || '#176B87' }}
@@ -239,7 +230,6 @@ function ApprovalLevels() {
         </div>
       )}
 
-      {/* Empty State */}
       {!loading && !error && levels.length === 0 && (
         <div className="text-center p-12 bg-white rounded-xl border border-[#B4D4FF] mb-8">
           <p className="text-slate-500 mb-4">No approval levels configured yet.</p>
@@ -252,7 +242,6 @@ function ApprovalLevels() {
         </div>
       )}
 
-      {/* Workflow Configuration Engine Notice */}
       <div className="coming-soon-card">
         <div className="coming-soon-card__icon" aria-hidden="true">
           <ApprovalIcon />
@@ -265,7 +254,6 @@ function ApprovalLevels() {
         <span className="coming-soon-card__phase">Coming in Phase 3</span>
       </div>
 
-      {/* Add Approval Level Modal */}
       <AddApprovalLevelModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -273,7 +261,6 @@ function ApprovalLevels() {
         existingLevels={levels}
       />
 
-      {/* Toast Notification */}
       {toast && (
         <div className="toast-container" aria-live="polite">
           <div className={`toast toast-${toast.type}`}>

@@ -1,7 +1,3 @@
-/**
- * seedData.js — Seed dataset and system module configuration.
- * Automatically loaded if the Role collection is empty.
- */
 
 export const MODULES_METADATA = [
   {
