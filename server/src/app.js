@@ -13,15 +13,29 @@ import { notFoundHandler, globalErrorHandler } from './middleware/errorHandler.j
 const app = express();
 
 // ─── CORS Configuration ──────────────────────────────────────────────────────
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174')
+const defaultAllowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://access-control-rbac-7c1w.vercel.app',
+];
+
+const envAllowedOrigins = (process.env.CLIENT_URL || '')
   .split(',')
-  .map((s) => s.trim());
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envAllowedOrigins]));
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-      if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.startsWith('http://localhost:') ||
+        origin.endsWith('.vercel.app')
+      ) {
         return callback(null, true);
       }
       return callback(new Error(`CORS policy blocked access from origin: ${origin}`));
