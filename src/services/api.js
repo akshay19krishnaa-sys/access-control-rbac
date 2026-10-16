@@ -6,7 +6,7 @@
  * (e.g., active role selection preference, UI view preferences).
  */
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
 /**
  * Helper to handle fetch responses and extract standard backend error payloads
