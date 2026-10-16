@@ -1,0 +1,63 @@
+import express from 'express';
+import cors from 'cors';
+import roleRoutes from './routes/roleRoutes.js';
+import permissionRoutes from './routes/permissionRoutes.js';
+import approvalLevelRoutes from './routes/approvalLevelRoutes.js';
+import auditRoutes from './routes/auditRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
+import businessRoutes from './routes/businessRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
+import { accessLogger } from './middleware/auth.js';
+import { notFoundHandler, globalErrorHandler } from './middleware/errorHandler.js';
+
+const app = express();
+
+// ─── CORS Configuration ──────────────────────────────────────────────────────
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174')
+  .split(',')
+  .map((s) => s.trim());
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS policy blocked access from origin: ${origin}`));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
+);
+
+// ─── Middleware ──────────────────────────────────────────────────────────────
+app.use(express.json());
+app.use(accessLogger);
+
+// ─── Healthcheck & API Info ──────────────────────────────────────────────────
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    service: 'access-control-rbac-api',
+    version: '1.0.0',
+  });
+});
+
+// ─── API Routes ──────────────────────────────────────────────────────────────
+app.use('/api/roles', roleRoutes);
+app.use('/api/permissions', permissionRoutes);
+app.use('/api/approval-levels', approvalLevelRoutes);
+app.use('/api/audit-logs', auditRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/business', businessRoutes);
+app.use('/api/reports', reportRoutes);
+
+// ─── Error Handling ──────────────────────────────────────────────────────────
+app.use(notFoundHandler);
+app.use(globalErrorHandler);
+
+export default app;

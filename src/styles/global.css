@@ -1,0 +1,146 @@
+/* =============================================
+   GLOBAL STYLES — Access Control RBAC Dashboard
+   Entry point: imports Tailwind + base tokens
+   ============================================= */
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+/* ── CSS Custom Properties (Design Tokens) ── */
+:root {
+  /* ── Core Assigned Palette ── */
+  --color-light-bg:     #EEF5FF;
+  --color-soft-blue:    #B4D4FF;
+  --color-medium-blue:  #86B6F6;
+  --color-deep-teal:    #176B87;
+
+  /* ── Theme Semantics ── */
+  --color-sidebar-bg:   #176B87;
+  --color-brand-700:    #0e4253;
+  --color-brand-600:    #12556c;
+  --color-brand-500:    #176B87;
+  --color-brand-400:    #86B6F6;
+  --color-brand-300:    #B4D4FF;
+  --color-brand-200:    #EEF5FF;
+
+  --color-surface-0:    #ffffff;
+  --color-surface-50:   #EEF5FF;
+  --color-surface-100:  #e4f0fc;
+  --color-surface-200:  #B4D4FF;
+  --color-surface-300:  #86B6F6;
+
+  /* Typography Colors — High contrast readable dark text */
+  --color-text-primary:   #0a1f2e;
+  --color-text-secondary: #1e3d54;
+  --color-text-tertiary:  #406882;
+  --color-text-inverse:   #ffffff;
+
+  --color-btn-primary-bg:   #86B6F6;
+  --color-btn-primary-text: #062033;
+  --color-btn-primary-hover:#6fa9f5;
+
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-danger:  #e11d48;
+  --color-info:    #176B87;
+  --color-border:  #B4D4FF;
+  --color-navy-700:#0e4253;
+
+  /* Sidebar */
+  --sidebar-width:          260px;
+  --sidebar-collapsed-width: 72px;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Spacing Scale */
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  16px;
+  --spacing-lg:  24px;
+  --spacing-xl:  32px;
+  --spacing-2xl: 48px;
+
+  /* Borders */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs:  0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm:  0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-lg:  0 10px 30px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+  --shadow-xl:  0 20px 50px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.07);
+
+  /* Transitions */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Top Bar */
+  --topbar-height: 64px;
+}
+
+/* ── Base Reset & Defaults ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-50);
+  overflow: hidden;
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-300);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* ── Focus Ring ── */
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Selection ── */
+::selection {
+  background: rgba(134, 182, 246, 0.35);
+  color: var(--color-text-primary);
+}
