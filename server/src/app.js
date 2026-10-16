@@ -37,6 +37,24 @@ app.use(express.json());
 app.use(accessLogger);
 
 // ─── Healthcheck & API Info ──────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: 'Access Control RBAC API',
+    status: 'online',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      roles: '/api/roles',
+      permissions: '/api/permissions',
+      approvalLevels: '/api/approval-levels',
+      auditLogs: '/api/audit-logs',
+      settings: '/api/settings/audit',
+      reports: '/api/reports/role-summary',
+    },
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
